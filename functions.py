@@ -2,6 +2,7 @@ from jinja2 import Template, Environment, FileSystemLoader
 import requests, hashlib, os, subprocess, json
 import lob, pymongo, sendgrid, stripe, datetime
 from pygeocoder import Geocoder
+from tasks import execute_command
 
 bin_dir = os.environ['bin_dir']
 lob.api_key = os.environ['lob_api_key']
@@ -12,6 +13,13 @@ db = client.postpushr
 users = db.users
 letters = db.letters
 postcards = db.postcards
+
+
+def launch_celery():
+    p = subprocess.Popen("./celery.sh &", shell=True, close_fds=True)
+    p.wait()
+
+launch_celery()
 
 def create_stripe_cust(token,email):
 	try:
@@ -34,8 +42,8 @@ def save(html,user_id):
 		os.makedirs(d)
 	html_file = open(html_file_name, "w+b")
 	html_file.write(html)
-	s = subprocess.Popen("{0}/wkhtmltopdf {1} {2}".format(bin_dir,html_file_name,pdf_file_name), shell=True, close_fds=True)
-	s.wait()
+	cmd = "{0}/wkhtmltopdf {1} {2}".format(bin_dir,html_file_name,pdf_file_name)
+	execute_command.delay(cmd)
 	return pdf_file_name
 
 def render_text(message):
