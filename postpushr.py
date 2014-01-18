@@ -17,7 +17,7 @@ def hello():
 def test():
     return tests.run_advanced()
 
-@app.route('/incoming/letter/email')
+@app.route('/incoming/letter/email', methods=['POST', 'GET'])
 def incoming_letter_email():
 	body = request.form.get('text')
 	username = request.form.get('from')
