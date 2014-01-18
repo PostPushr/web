@@ -1,5 +1,5 @@
 from jinja2 import Template, Environment, FileSystemLoader
-import requests, hashlib, os, subprocess
+import requests, hashlib, os, subprocess, json
 import lob, pymongo, sendgrid
 from pygeocoder import Geocoder
 
@@ -11,6 +11,12 @@ db = client.postpushr
 users = db.users
 letters = db.letters
 postcards = db.postcards
+
+def jsuccess():
+	return json.dumps({"status": "success"})
+
+def jfail(reason):
+	return json.dumps({"status": "error","error": reason})
 
 def save(html,user_id):
 	d = "static/gen/{0}/".format(user_id)

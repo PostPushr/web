@@ -24,13 +24,17 @@ def incoming_letter_email():
 	to_name = request.form.get('to')
 	to_address = request.form.get('subject')
 
-	user = User.User(username)
+	if None in [body,username,to_name,to_address]:
+		return Response(response=jfail("missing parameters"), status=200)
+
+	user = User(username)
 	if user.is_valid():
 		send_letter(user,to_name,to_address,body)
 	else:
 		return_unknown_sender(username)
+		return Response(response=jfail("unknown sender"), status=200)
 
-	print "HTTP/1.1 200 OK"
+	return Response(response=jsuccess(), status=200)
 
 
 if __name__ == '__main__':
