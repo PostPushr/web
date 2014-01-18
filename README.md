@@ -1,3 +1,2 @@
-###SnapOverflow
-- Name is temporary
-- http://snapoverflow.herokuapp.com/
+###PostPushr
+- http://postpushr.com/
