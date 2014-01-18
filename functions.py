@@ -1,12 +1,14 @@
 from jinja2 import Template, Environment, FileSystemLoader
 import requests, hashlib, os, subprocess
-import lob
+import lob, pymongo
 
 bin_dir = os.environ['bin_dir']
 lob.api_key = os.environ['lob_api_key']
 client = pymongo.MongoClient(os.environ['db'])
 db = client.postpushr
 users = db.users
+letters = db.letters
+postcards = db.postcards
 
 def save(html,user_id):
 	d = "static/gen/{0}/".format(user_id)
@@ -21,7 +23,6 @@ def save(html,user_id):
 	return pdf_file_name
 
 def render_text(message):
-	
 	env = Environment(loader=FileSystemLoader('templates'))
 	template = env.get_template('pdf.html')
 	generated_html = template.render(message=message)
@@ -29,6 +30,7 @@ def render_text(message):
 
 def render_html(html):
 	return html
+
 def render_url(url):
 	html = requests.get(url).text
 	return html
@@ -51,5 +53,24 @@ def remove_addresses():
 	for a in lob.Address.list():
 		lob.Address.delete(id=a.id)
 
-def create_user(username, password, **kwargs):
-	return str(users.insert({"username": username, "password": hash_password(password), **kwargs}))
+def create_user(username, hashed_password, **kwargs):
+	#Expect: Name, Email, Token, Snapchat, ...
+	kwargs["username"] = username
+	kwargs["password"] = hashed_password
+	return str(users.insert(**kwargs))
+
+def sha1(text):
+	m = hashlib.sha1()
+	m.update(text)
+	return m.hexdigest()
+
+def hash_password(pasword):
+	return sha1(sha1(password)+sha1(os.environ["salt"]))
+
+def return_unknown_sender(email):
+	#TODO: Sendgrid email in response, with form to registration
+	raise NotImplementedError
+
+def send_letter(from_email,to_name,to_address,body):
+	#TODO: Send letter, see tests
+	raise NotImplementedError
