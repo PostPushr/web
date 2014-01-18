@@ -14,7 +14,7 @@ public class SignInActivity extends Activity {
 		
 		System.err.println("hello");
 		
-		getFragmentManager().beginTransaction().add(R.id.signin_fragment_container, new RegisterFragment()).addToBackStack("Add RegisterFragment").commit();
+		getFragmentManager().beginTransaction().add(R.id.signin_fragment_container, new LoginFragment()).addToBackStack("Add RegisterFragment").commit();
 
 	}
 
