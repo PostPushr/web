@@ -1,149 +1,136 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:layout_height="match_parent" >
 
-    <TextView
-        android:id="@+id/setup_textview"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/setup"
-        android:textIsSelectable="false" />
-
-    <ScrollView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/padding" >
+
+        <TextView
+            android:id="@+id/register_email_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/email"
+            android:textIsSelectable="false" />
+
+        <EditText
+            android:id="@+id/register_email_edittext"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/email_hint"
+            android:inputType="textEmailAddress" />
+
+        <TextView
+            android:id="@+id/register_password_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/password"
+            android:textIsSelectable="false" />
+
+        <EditText
+            android:id="@+id/register_password_edittext"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/password_hint"
+            android:inputType="text|textPassword" />
+
+        <TextView
+            android:id="@+id/register_name_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/name"
+            android:textIsSelectable="false" />
+
+        <EditText
+            android:id="@+id/register_name_edittext"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/name_hint"
+            android:inputType="text|textCapWords" />
+
+        <TextView
+            android:id="@+id/register_credit_card_number_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/credit_card_number"
+            android:textIsSelectable="false" />
+
+        <EditText
+            android:id="@+id/register_credit_card_number_edittext"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/credit_card_number_hint"
+            android:inputType="number"
+            android:maxLength="16" />
+
+        <TextView
+            android:id="@+id/register_credit_card_expiration_date_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/credit_card_expiration_date"
+            android:textIsSelectable="false" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="@dimen/padding"
-            android:orientation="vertical" >
-
-            <TextView
-                android:id="@+id/email_textview"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/email"
-                android:textIsSelectable="false" />
+            android:orientation="horizontal" >
 
             <EditText
-                android:id="@+id/email_edittext"
-                android:layout_width="match_parent"
+                android:id="@+id/register_credit_card_expiration_date_month_edittext"
+                android:layout_width="0dip"
                 android:layout_height="wrap_content"
-                android:hint="@string/email_hint"
-                android:inputType="textEmailAddress" />
-
-            <TextView
-                android:id="@+id/password_textview"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/password"
-                android:textIsSelectable="false" />
-
-            <EditText
-                android:id="@+id/password_edittext"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/password_hint"
-                android:inputType="text|textPassword" />
-
-            <TextView
-                android:id="@+id/name_textview"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/name"
-                android:textIsSelectable="false" />
-
-            <EditText
-                android:id="@+id/name_edittext"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/name_hint"
-                android:inputType="text|textCapWords" />
-
-            <TextView
-                android:id="@+id/credit_card_number_textview"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/credit_card_number"
-                android:textIsSelectable="false" />
-
-            <EditText
-                android:id="@+id/credit_card_number_edittext"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/credit_card_number_hint"
+                android:layout_weight="1"
+                android:hint="@string/credit_card_expiration_date_month_hint"
                 android:inputType="number"
-                android:maxLength="16" />
-
-            <TextView
-                android:id="@+id/credit_card_expiration_date_textview"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/credit_card_expiration_date"
-                android:textIsSelectable="false" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal" >
-
-                <EditText
-                    android:id="@+id/credit_card_expiration_date_month_edittext"
-                    android:layout_width="0dip"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:hint="@string/credit_card_expiration_date_month_hint"
-                    android:inputType="number"
-                    android:maxLength="2" />
-
-                <EditText
-                    android:id="@+id/credit_card_expiration_date_year_edittext"
-                    android:layout_width="0dip"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:hint="@string/credit_card_expiration_date_year_hint"
-                    android:inputType="number"
-                    android:maxLength="4" />
-            </LinearLayout>
-
-            <TextView
-                android:id="@+id/credit_card_security_code_textview"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/credit_card_security_code"
-                android:textIsSelectable="false" />
+                android:maxLength="2" />
 
             <EditText
-                android:id="@+id/credit_card_security_code_edittext"
-                android:layout_width="match_parent"
+                android:id="@+id/register_credit_card_expiration_date_year_edittext"
+                android:layout_width="0dip"
                 android:layout_height="wrap_content"
-                android:hint="@string/credit_card_security_code_hint"
+                android:layout_weight="1"
+                android:hint="@string/credit_card_expiration_date_year_hint"
                 android:inputType="number"
                 android:maxLength="4" />
-
-            <TextView
-                android:id="@+id/address_textview"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/address"
-                android:textIsSelectable="false" />
-
-            <EditText
-                android:id="@+id/address_edittext"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/address_hint"
-                android:inputType="textEmailAddress" />
-
-            <Button
-                android:id="@+id/setup_submit_button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Submit" />
         </LinearLayout>
-    </ScrollView>
 
-</LinearLayout>
+        <TextView
+            android:id="@+id/register_credit_card_security_code_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/credit_card_security_code"
+            android:textIsSelectable="false" />
+
+        <EditText
+            android:id="@+id/register_credit_card_security_code_edittext"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/credit_card_security_code_hint"
+            android:inputType="number"
+            android:maxLength="4" />
+
+        <TextView
+            android:id="@+id/register_address_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/address"
+            android:textIsSelectable="false" />
+
+        <EditText
+            android:id="@+id/register_address_edittext"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/address_hint"
+            android:inputType="textEmailAddress" />
+
+        <Button
+            android:id="@+id/register_submit_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Submit" />
+    </LinearLayout>
+
+</ScrollView>
