@@ -2,10 +2,10 @@
 
 (python postpushr.py > /dev/null 2>&1) & sleep 1;
 
-c=$(ps -ef | grep "python postpushr.py" | grep -v grep | awk '{print $2}' | wc -c);
+c=$(ps -ef | grep "python" | grep "MHacks" | grep -v grep | awk '{print $2}' | wc -c);
 
 if [ "$c" -ne "0" ]; then
-	ps -ef | grep "python postpushr.py" | grep -v grep | awk '{print $2}' | xargs kill;
+	ps -ef | grep "python" | grep "MHacks" | grep -v grep | awk '{print $2}' | xargs kill;
 	exit 0;
 else
 	echo "Warning: Build Failing";
