@@ -2,9 +2,13 @@ Flask==0.10.1
 Jinja2==2.7.2
 MarkupSafe==0.18
 Werkzeug==0.9.4
+address==0.1.1
 distribute==0.6.34
+gunicorn==18.0
 itsdangerous==0.23
 lob-python==1.0
+pygeocoder==1.2.2
 pymongo==2.6.3
 requests==2.2.0
+sendgrid==0.1.4
 wsgiref==0.1.2
