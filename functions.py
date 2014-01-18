@@ -14,8 +14,11 @@ letters = db.letters
 postcards = db.postcards
 
 def create_stripe_cust(token,email):
-	customer = stripe.Customer.create(card=token,description="PostPushr: "+email)
-	return customer.id
+	try:
+		customer = stripe.Customer.create(card=token,description="PostPushr: "+email)
+		return customer.id
+	except stripe.error.CardError:
+		return None
 	
 def jsuccess():
 	return json.dumps({"status": "success"})

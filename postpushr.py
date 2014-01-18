@@ -38,7 +38,12 @@ def signup():
 		snapchat = request.form.get("snapchat")
 		token = request.form.get("stripeToken")
 		address = request.form.get("address")
-		userid = create_user(username,hash_password(password),name=name,snapchat=snapchat,token=create_stripe_cust(token),address=address)
+
+		cust = create_stripe_cust(token,username)
+		if cust == None:
+			flash("Your card was declined.")
+			return redirect(url_for('logout'))
+		userid = create_user(username,hash_password(password),name=name,snapchat=snapchat,token=cust,address=address)
 		session["userid"] = userid
 		return redirect(url_for('settings'))
 	return render_template('signup.html',email=session["username"],smarty_key=os.environ['smarty_key'])
