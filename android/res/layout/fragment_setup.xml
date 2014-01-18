@@ -37,7 +37,7 @@
     	android:layout_width="wrap_content"
     	android:layout_height="wrap_content"	
 		android:hint="@string/password_hint"
-		android:inputType="text|textCapWords" />
+		android:inputType="text|textPassword" />
 
 	<TextView
         android:id="@+id/name_textview"
