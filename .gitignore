@@ -1,6 +1,8 @@
 *.py[cod]
 
 log/
+static/gen/
+bin/mac/
 
 .env
 id_rsa
