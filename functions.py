@@ -23,7 +23,7 @@ def jsuccess():
 def jfail(reason):
 	return json.dumps({"status": "error","error": reason})
 
-def save(html,user):
+def save(html, user, to_address, from_address):
 	user_id = hashlib.md5(user.get("username")+str(datetime.datetime.now())).hexdigest()
 	d = "static/gen/{0}/".format(user_id)
 	pdf_file_name = d+"{0}.pdf".format(user_id)
@@ -33,7 +33,7 @@ def save(html,user):
 	html_file = open(html_file_name, "w+b")
 	html_file.write(html)
 	cmd = "{0}/wkhtmltopdf -s Letter {1} {2}".format(bin_dir,html_file_name,pdf_file_name)
-	wkhtmltopdf_letters.delay(cmd,user,pdf_file_name)
+	wkhtmltopdf_letters.delay(cmd,user, pdf_file_name, to_address, from_address)
 	return pdf_file_name
 
 def render_text(message):
@@ -107,7 +107,7 @@ def send_letter(user,to_name,to_address,body):
 
 		stripe.Charge.create(amount=150,currency="usd",customer=user.get("token"))
 
-		obj_loc = save(render_text(message), user)
+		obj_loc = save(render_text(message), user, to_address, from_address)
 		return obj_loc
 	else:
 		return_unknown_address(user,to_address)
