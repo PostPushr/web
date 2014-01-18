@@ -23,3 +23,4 @@ HOME SCREEN
 OTHER
 -Send snaps/texts/other notifications to recipients - "you've got a surprise coming in the mail!" -> tie time of sending to recipt of package
   Only supported if they setup a snapchat handle
+    Easter egg: Random selfie of David every 100 uses
