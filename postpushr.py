@@ -41,7 +41,7 @@ def signup():
 		user = create_user(username,hash_password(password),name,snapchat,token,address)
 		session["user"] = user
 		return redirect(url_for('settings'))
-	return render_template('signup.html',email=session["username"])
+	return render_template('signup.html',email=session["username"],smarty_key=os.environ['smarty_key'])
 
 @app.route('/settings', methods=['POST', 'GET'])
 def settings():
