@@ -1,10 +1,14 @@
-import functions 
+import functions
+from bson.objectid import ObjectId
 
 class User(object):
 	"""MongoDB-Backed User"""
-	def __init__(self, username):
+	def __init__(self, username, userid=None):
 		self.username = username
-		self.obj = functions.users.find_one({"username": username})
+		if userid:
+			self.obj = functions.users.find_one({"_id": ObjectId(userid)})
+		else:
+			self.obj = functions.users.find_one({"username": username})
 		
 	def is_valid(self):
 		return self.obj != None

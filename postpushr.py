@@ -5,6 +5,7 @@ from functions import *
 import tests
 from User import User
 from bson.objectid import ObjectId
+from dateutil import parser
 
 app = Flask(__name__)
 app.secret_key = os.environ['sk']
@@ -54,8 +55,8 @@ def signup():
 def settings():
 	if session.get('userid') == None:
 		return redirect(url_for('index'))
-	user = User(session["userid"])
-	return render_template('settings.html',user=user)
+	user = User(None,userid=session["userid"])
+	return render_template('settings.html',user=user,letters=letters.find({"from_address.email": user.get("username")}))
 
 @app.route('/logout')
 def logout():
@@ -82,6 +83,14 @@ def incoming_letter_email():
 
 	return Response(response=jsuccess(), status=200)
 
+
+@app.template_filter('ucfirst')
+def ucfirst_filter(txt):
+	return ucfirst(txt)
+
+@app.template_filter('dt')
+def dt_filer(dt):
+	return parser.parse(dt).strftime("%x")
 
 if __name__ == '__main__':
 	if os.environ.get('PORT'):

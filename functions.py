@@ -84,8 +84,12 @@ def return_unknown_address(user,address):
 	message.add_to(user.get("username"),user.get("name"))
 	s.web.send(message)
 
-def create_address_from_geocode(name, address_coded):
-	return lob.Address.create(name=name, address_line1=address_coded.street_number+address_coded.route, address_city=address_coded.city, address_state=address_coded.state__short_name, address_country=address_coded.country__short_name, address_zip=address_coded.postal_code)
+def create_address_from_geocode(name, address_coded, email=None):
+	return lob.Address.create(name=name, address_line1=address_coded.street_number+" "+address_coded.route, address_city=address_coded.city, address_state=address_coded.state__short_name, address_country=address_coded.country__short_name, address_zip=address_coded.postal_code, email=email)
+
+
+def ucfirst(txt):
+	return ' '.join([x[:1].upper()+x[1:].lower() for x in txt.split(' ')])
 
 def send_letter(user,to_name,to_address,body):
 	to_address_coded = Geocoder.geocode(to_address)
@@ -94,13 +98,14 @@ def send_letter(user,to_name,to_address,body):
 
 		to_name = to_name.replace("_"," ")
 		to_name = re.sub("@\w+."+os.environ["domain"],"",to_name)
-		to_name = ' '.join([x[:1].upper()+x[1:].lower() for x in to_name.split(' ')])
+		to_name = ucfirst(to_name)
+		
 		message = {"to": {"prefix": "Dear", "name": to_name}, "_from": {"prefix": "Sincerely,", "name": user.get("name")}, "body": body}
 
 		to_address = create_address_from_geocode(message["to"]["name"], to_address_coded)
 
 		from_address_coded = Geocoder.geocode(user.get('address'))
-		from_address = create_address_from_geocode(message["_from"]["name"], from_address_coded)
+		from_address = create_address_from_geocode(message["_from"]["name"], from_address_coded, email=user.get('username'))
 
 		message["to"]["address"] = str(to_address_coded).replace(",","<br>")
 		message["_from"]["address"] = str(from_address_coded).replace(",","<br>")
