@@ -1,10 +1,11 @@
 from jinja2 import Template, Environment, FileSystemLoader
 import requests, hashlib, os, subprocess
-import lob, pymongo
+import lob, pymongo, sendgrid
 from pygeocoder import Geocoder
 
 bin_dir = os.environ['bin_dir']
 lob.api_key = os.environ['lob_api_key']
+s = sendgrid.Sendgrid(os.environ['s_user'], os.environ['s_pass'], secure=True)
 client = pymongo.MongoClient(os.environ['db'])
 db = client.postpushr
 users = db.users
@@ -55,8 +56,20 @@ def hash_password(pasword):
 	return sha1(sha1(password)+sha1(os.environ["salt"]))
 
 def return_unknown_sender(email):
-	#TODO: Sendgrid email in response, with form to registration
-	raise NotImplementedError
+	subject = "Unregistered PostPushr User"
+	text = "Hello,\n\nYou are receiving this email because you tried to send a physical document via PostPushr. PostPushr is a service that allows you to easily and affordably forward digital documents to physical locations.\n\nTo register for an account, please visit http://www.{0}.".format(os.environ['domain'])
+	html = "Hello,<br /><br />You are receiving this email because you tried to send a physical document via PostPushr. PostPushr is a service that allows you to easily and affordably forward digital documents to physical locations.<br /><br />To register for an account, please visit <a href='http://www.{0}'>our site</a>.".format(os.environ['domain'])
+	message = sendgrid.Message(("errors@support.{0}".format(os.environ['domain']),"PostPushr Error Bot"), subject, text, html)
+	message.add_to(email)
+	s.web.send(message)
+
+def return_unknown_address(user,address):
+	subject = "Unknown PostPushr Destination Address"
+	text = "Hello {0},\n\nYou are receiving this email because you tried to send a physical document via PostPushr to an invalid address. PostPushr could not recognize \"{1}\".\n\nPlease try to to send your document again.".format(user.get("name"),address)
+	html = "Hello {0},<br /><br />You are receiving this email because you tried to send a physical document via PostPushr to an invalid address. PostPushr could not recognize <pre>{1}</pre>.<br /><br />Please try to to send your document again.".format(user.get("name"),address)
+	message = sendgrid.Message(("errors@support.{0}".format(os.environ['domain']),"PostPushr Error Bot"), subject, text, html)
+	message.add_to(email,user.get("name"))
+	s.web.send(message)
 
 def create_address_from_geocode(name, address_coded):
 	return functions.lob.Address.create(name=name, address_line1=address_coded.street_number+address_coded.route, address_city=address_coded.city, address_state=address_coded.state__short_name, address_country=address_coded.country__short_name, address_zip=address_coded.postal_code)
@@ -78,8 +91,10 @@ def send_letter(user,to_name,to_address,body):
 		message["_from"]["address"] = str(from_address)
 
 		obj_loc = functions.save(functions.render_text(message), hashlib.md5(user).hexdigest())
-		_object = functions.lob.Object.create(name=hashlib.md5(user+str(datetime.datetime.now())).hexdigest(), file="http://"+os.environ['domain']+"/"+obj_loc, setting_id='100', quantity=1)
+		_object = functions.lob.Object.create(name=hashlib.md5(user+str(datetime.datetime.now())).hexdigest(), file="http://www."+os.environ['domain']+"/"+obj_loc, setting_id='100', quantity=1)
 		job = functions.lob.Job.create(name=hashlib.md5(user+str(datetime.datetime.now())).hexdigest(), to=to_address.id, objects=_object.id, from_address=from_address.id, packaging_id='1').to_dict()
 		letters.insert(job)
 		return job
+	else:
+		return_unknown_address(user,to_address)
 
