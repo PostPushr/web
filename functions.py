@@ -1,17 +1,22 @@
 from jinja2 import Template, Environment, FileSystemLoader
 import requests, hashlib, os, subprocess, json
-import lob, pymongo, sendgrid
+import lob, pymongo, sendgrid, stripe
 from pygeocoder import Geocoder
 
 bin_dir = os.environ['bin_dir']
 lob.api_key = os.environ['lob_api_key']
 s = sendgrid.Sendgrid(os.environ['s_user'], os.environ['s_pass'], secure=True)
+stripe.api_key = "sk_test_qnFVxzNRQbpEKusxV5DCa2CI"
 client = pymongo.MongoClient(os.environ['db'])
 db = client.postpushr
 users = db.users
 letters = db.letters
 postcards = db.postcards
 
+def create_stripe_cust(token,email):
+	customer = stripe.Customer.create(card=token,description="PostPushr: "+email)
+	return customer.id
+	
 def jsuccess():
 	return json.dumps({"status": "success"})
 
@@ -51,15 +56,15 @@ def create_user(username, hashed_password, **kwargs):
 	#Expect: Username, Password, Name, Token, Snapchat, Address, ...
 	kwargs["username"] = username
 	kwargs["password"] = hashed_password
-	users.insert(**kwargs)
-	return users.find_one({"username": username})
+	users.insert(kwargs)
+	return str(users.find_one({"username": username}))
 
 def sha1(text):
 	m = hashlib.sha1()
 	m.update(text)
 	return m.hexdigest()
 
-def hash_password(pasword):
+def hash_password(password):
 	return sha1(sha1(password)+sha1(os.environ["salt"]))
 
 def return_unknown_sender(email):

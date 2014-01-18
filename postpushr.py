@@ -11,13 +11,13 @@ app.secret_key = os.environ['sk']
 
 @app.route('/', methods=['POST', 'GET'])
 def index():
-	if session.get('user'):
+	if session.get('userid'):
 		return redirect(url_for('settings'))
 	if request.method == "POST":
 		user = User(request.form.get('email'))
 		if user.is_valid():
 			if user.check_pass(request.form.get('password')):
-				session["user"] = user
+				session["userid"] = str(user["_id"])
 				return redirect(url_for('settings'))
 			else:
 				flash("Your password was incorrect.")
@@ -29,7 +29,7 @@ def index():
 
 @app.route('/signup', methods=['POST', 'GET'])
 def signup():
-	if session.get('user'):
+	if session.get('userid'):
 		return redirect(url_for('settings'))
 	if request.method == "POST":
 		username = session.pop("username")
@@ -38,14 +38,23 @@ def signup():
 		snapchat = request.form.get("snapchat")
 		token = request.form.get("stripeToken")
 		address = request.form.get("address")
-		user = create_user(username,hash_password(password),name,snapchat,token,address)
-		session["user"] = user
+		userid = create_user(username,hash_password(password),name=name,snapchat=snapchat,token=create_stripe_cust(token),address=address)
+		session["userid"] = userid
 		return redirect(url_for('settings'))
 	return render_template('signup.html',email=session["username"],smarty_key=os.environ['smarty_key'])
 
 @app.route('/settings', methods=['POST', 'GET'])
 def settings():
-	return render_template('settings.html')
+	if session.get('userid') == None:
+		return redirect(url_for('index'))
+	user = User(session["userid"])
+	return render_template('settings.html',user=user)
+
+@app.route('/logout')
+def logout():
+	session["userid"] = None
+	session.clear()
+	return redirect(url_for('index'))
 
 @app.route('/incoming/letter/email', methods=['POST', 'GET'])
 def incoming_letter_email():
