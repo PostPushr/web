@@ -9,13 +9,43 @@ from bson.objectid import ObjectId
 app = Flask(__name__)
 app.secret_key = os.environ['sk']
 
-@app.route('/')
-def hello():
-    return "Hello, World!"
+@app.route('/', methods=['POST', 'GET'])
+def index():
+	if session.get('user'):
+		return redirect(url_for('settings'))
+	if request.method == "POST":
+		user = User(request.form.get('email'))
+		if user.is_valid():
+			if user.check_pass(request.form.get('password')):
+				session["user"] = user
+				return redirect(url_for('settings'))
+			else:
+				flash("Your password was incorrect.")
+		else:
+			session["username"] = request.form.get('email')
+			session["password"] = request.form.get('password')
+			return redirect(url_for('signup'))
+	return render_template('index.html')
 
-@app.route('/test')
-def test():
-    return tests.run_advanced()
+@app.route('/signup', methods=['POST', 'GET'])
+def signup():
+	if session.get('user'):
+		return redirect(url_for('settings'))
+	if request.method == "POST":
+		username = session.pop("username")
+		password = session.pop("password")
+		name = request.form.get("name")
+		snapchat = request.form.get("snapchat")
+		token = request.form.get("stripeToken")
+		address = request.form.get("address")
+		user = create_user(username,hash_password(password),name,snapchat,token,address)
+		session["user"] = user
+		return redirect(url_for('settings'))
+	return render_template('signup.html',email=session["username"])
+
+@app.route('/settings', methods=['POST', 'GET'])
+def settings():
+	return render_template('settings.html')
 
 @app.route('/incoming/letter/email', methods=['POST', 'GET'])
 def incoming_letter_email():

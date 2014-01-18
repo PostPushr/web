@@ -48,10 +48,11 @@ def remove_addresses():
 		lob.Address.delete(id=a.id)
 
 def create_user(username, hashed_password, **kwargs):
-	#Expect: Username, Password, Name, Email, Token, Snapchat, Address, ...
+	#Expect: Username, Password, Name, Token, Snapchat, Address, ...
 	kwargs["username"] = username
 	kwargs["password"] = hashed_password
-	return str(users.insert(**kwargs))
+	users.insert(**kwargs)
+	return users.find_one({"username": username})
 
 def sha1(text):
 	m = hashlib.sha1()
@@ -74,7 +75,7 @@ def return_unknown_address(user,address):
 	text = "Hello {0},\n\nYou are receiving this email because you tried to send a physical document via PostPushr to an invalid address. PostPushr could not recognize \"{1}\".\n\nPlease try to to send your document again.".format(user.get("name"),address)
 	html = "Hello {0},<br /><br />You are receiving this email because you tried to send a physical document via PostPushr to an invalid address. PostPushr could not recognize <pre>{1}</pre>.<br /><br />Please try to to send your document again.".format(user.get("name"),address)
 	message = sendgrid.Message(("errors@support.{0}".format(os.environ['domain']),"PostPushr Error Bot"), subject, text, html)
-	message.add_to(email,user.get("name"))
+	message.add_to(user.get("username"),user.get("name"))
 	s.web.send(message)
 
 def create_address_from_geocode(name, address_coded):
