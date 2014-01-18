@@ -18,6 +18,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:padding="30dp"
             android:orientation="vertical" >
 
             <TextView
@@ -29,7 +30,7 @@
 
             <EditText
                 android:id="@+id/email_edittext"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/email_hint"
                 android:inputType="textEmailAddress" />
@@ -43,7 +44,7 @@
 
             <EditText
                 android:id="@+id/password_edittext"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/password_hint"
                 android:inputType="text|textPassword" />
@@ -57,7 +58,7 @@
 
             <EditText
                 android:id="@+id/name_edittext"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/name_hint"
                 android:inputType="text|textCapWords" />
@@ -71,7 +72,7 @@
 
             <EditText
                 android:id="@+id/credit_card_number_edittext"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/credit_card_number_hint"
                 android:inputType="number"
@@ -91,19 +92,21 @@
 
                 <EditText
                     android:id="@+id/credit_card_expiration_date_month_edittext"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dip"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:hint="@string/credit_card_expiration_date_month_hint"
                     android:inputType="number"
                     android:maxLength="2" />
 
                 <EditText
                     android:id="@+id/credit_card_expiration_date_year_edittext"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dip"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:hint="@string/credit_card_expiration_date_year_hint"
                     android:inputType="number"
-                    android:maxLength="2" />
+                    android:maxLength="4" />
             </LinearLayout>
 
             <TextView
@@ -115,11 +118,11 @@
 
             <EditText
                 android:id="@+id/credit_card_security_code_edittext"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/credit_card_security_code_hint"
                 android:inputType="number"
-                android:maxLength="3" />
+                android:maxLength="4" />
 
             <TextView
                 android:id="@+id/address_textview"
@@ -130,10 +133,16 @@
 
             <EditText
                 android:id="@+id/address_edittext"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/address_hint"
-                android:inputType="text|textCapWords" />
+                android:inputType="textEmailAddress" />
+
+            <Button
+                android:id="@+id/setup_submit_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Submit" />
         </LinearLayout>
     </ScrollView>
 
