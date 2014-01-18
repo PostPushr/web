@@ -1,6 +1,7 @@
 from jinja2 import Template, Environment, FileSystemLoader
 import requests, hashlib, os, subprocess
 import lob, pymongo
+from pygeocoder import Geocoder
 
 bin_dir = os.environ['bin_dir']
 lob.api_key = os.environ['lob_api_key']
@@ -35,26 +36,12 @@ def render_url(url):
 	html = requests.get(url).text
 	return html
 
-def format_address(address):
-	address_dict = address.to_dict()
-	address_str = ""
-	to_add = [[address_dict["address_line1"]], [address_dict["address_line2"]], [address_dict["address_city"], ", ", address_dict["address_state"]], [address_dict["address_country"], " ", address_dict["address_zip"]]]
-	for s in to_add:
-		try:
-			for ss in s:
-				address_str += ss
-			address_str += "<br />"
-		except Exception:
-			continue
-	#ob.Address.delete(id=address.id)
-	return address_str.strip()
-
 def remove_addresses():
 	for a in lob.Address.list():
 		lob.Address.delete(id=a.id)
 
 def create_user(username, hashed_password, **kwargs):
-	#Expect: Name, Email, Token, Snapchat, ...
+	#Expect: Username, Password, Name, Email, Token, Snapchat, Address, ...
 	kwargs["username"] = username
 	kwargs["password"] = hashed_password
 	return str(users.insert(**kwargs))
@@ -71,6 +58,28 @@ def return_unknown_sender(email):
 	#TODO: Sendgrid email in response, with form to registration
 	raise NotImplementedError
 
-def send_letter(from_email,to_name,to_address,body):
-	#TODO: Send letter, see tests
-	raise NotImplementedError
+def create_address_from_geocode(name, address_coded):
+	return functions.lob.Address.create(name=name, address_line1=address_coded.street_number+address_coded.route, address_city=address_coded.city, address_state=address_coded.state__short_name, address_country=address_coded.country__short_name, address_zip=address_coded.postal_code)
+
+def send_letter(user,to_name,to_address,body):
+	to_address_coded = Geocoder.geocode(to_address)
+
+	if to_address_coded.valid_address:
+
+		to_name = to_name.replace("_"," ")
+		message = {"to": {"prefix": "Dear", "name": to_name}, "_from": {"prefix": "Sincerely,", "name": user.get("name")}, "body": body}
+
+		to_address = create_address_from_geocode(message["to"]["name"], to_address_coded)
+
+		from_address_coded = Geocoder.geocode(user.get('address'))
+		from_address = create_address_from_geocode(message["_from"]["name"], from_address_coded)
+
+		message["to"]["address"] = str(to_address)
+		message["_from"]["address"] = str(from_address)
+
+		obj_loc = functions.save(functions.render_text(message), hashlib.md5(user).hexdigest())
+		_object = functions.lob.Object.create(name=hashlib.md5(user+str(datetime.datetime.now())).hexdigest(), file="http://"+os.environ['domain']+"/"+obj_loc, setting_id='100', quantity=1)
+		job = functions.lob.Job.create(name=hashlib.md5(user+str(datetime.datetime.now())).hexdigest(), to=to_address.id, objects=_object.id, from_address=from_address.id, packaging_id='1').to_dict()
+		letters.insert(job)
+		return job
+
