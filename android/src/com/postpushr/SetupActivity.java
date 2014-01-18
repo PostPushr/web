@@ -3,6 +3,7 @@ package com.postpushr;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuInflater;
 
 public class SetupActivity extends Activity {
 
@@ -10,13 +11,15 @@ public class SetupActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.fragment_setup);
+
+		getActionBar().show();
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.setup, menu);
-		return true;
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.setup_actions, menu);
+		return super.onCreateOptionsMenu(menu);
 	}
 
 }
