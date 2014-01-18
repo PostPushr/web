@@ -1,9 +1,10 @@
 SETUP SCREEN
 -User name
--CC Info (Stripe)
+-CC Info (to Stripe)
   -CC #
   -CC Security Code
   -CC Expiration Date
+-Stripe hands back a token, send the token to our server
 -Snapchat handle/Text #/etc (requires confirmation for security)
 
 PER USE
