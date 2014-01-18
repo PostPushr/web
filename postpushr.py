@@ -26,7 +26,7 @@ def incoming_letter_email():
 
 	user = User.User(username)
 	if user.is_valid():
-		send_letter(username,to_name,to_address,body)
+		send_letter(user,to_name,to_address,body)
 	else:
 		return_unknown_sender(username)
 
