@@ -14,11 +14,15 @@ def hello():
 
 @app.route('/test')
 def test():
-    return tests.run_simple()
+    return tests.run_advanced()
 
-@app.route('/send')
-def send():
-	return ""
+@app.route('/incoming/letter/email')
+def incoming_letter_email():
+	print "HTTP/1.1 200 OK"
+	body = request.form.get('text')
+	username = request.form.get('from')
+	to_name = request.form.get('to')
+	to_address = request.form.get('subject')
 
 
 if __name__ == '__main__':

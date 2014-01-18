@@ -4,6 +4,9 @@ import lob
 
 bin_dir = os.environ['bin_dir']
 lob.api_key = os.environ['lob_api_key']
+client = pymongo.MongoClient(os.environ['db'])
+db = client.postpushr
+users = db.users
 
 def save(html,user_id):
 	d = "static/gen/{0}/".format(user_id)
@@ -47,3 +50,6 @@ def format_address(address):
 def remove_addresses():
 	for a in lob.Address.list():
 		lob.Address.delete(id=a.id)
+
+def create_user(username, password, **kwargs):
+	return str(users.insert({"username": username, "password": hash_password(password), **kwargs}))
