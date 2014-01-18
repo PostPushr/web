@@ -6,14 +6,14 @@ class User(object):
 		self.username = username
 		self.obj = functions.users.find_one({"username": username})
 		
-	def is_valid():
+	def is_valid(self):
 		return self.obj != None
 
-	def get(attr):
+	def get(self,attr):
 		try:
 			return self.obj[attr]
 		except KeyError:
 			return None
 
-	def check_pass(passwd):
+	def check_pass(self,passwd):
 		return functions.hash_password(passwd) == self.obj["pass"]	
