@@ -103,6 +103,8 @@ def send_letter(user,to_name,to_address,body):
 	if to_address_coded.valid_address:
 
 		to_name = to_name.replace("_"," ")
+		to_name = re.sub("@\w+."+os.environ["domain"],"",to_name)
+		to_name = ' '.join([x[:1].upper()+x[1:].lower() for x in to_name.split(' ')])
 		message = {"to": {"prefix": "Dear", "name": to_name}, "_from": {"prefix": "Sincerely,", "name": user.get("name")}, "body": body}
 
 		to_address = create_address_from_geocode(message["to"]["name"], to_address_coded)
@@ -112,6 +114,8 @@ def send_letter(user,to_name,to_address,body):
 
 		message["to"]["address"] = str(to_address)
 		message["_from"]["address"] = str(from_address)
+
+		stripe.Charge.create(amount=150,currency="usd",customer=user.get("token"))
 
 		obj_loc = save(render_text(message), hashlib.md5(user.get("username")).hexdigest())
 		_object = lob.Object.create(name=hashlib.md5(user.get("username")+str(datetime.datetime.now())).hexdigest(), file="http://www."+os.environ['domain']+"/"+obj_loc, setting_id='100', quantity=1)
