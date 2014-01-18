@@ -1,5 +1,5 @@
 if [ "$dev" == "True" ]; then
-        python snapoverflow.py
+        python postpushr.py
 else
-        gunicorn snapoverflow:app
+        gunicorn postpushr:app
 fi
