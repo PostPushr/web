@@ -4,7 +4,6 @@ SETUP SCREEN
   -CC #
   -CC Security Code
   -CC Expiration Date
-  -CC Zip Code
 -Snapchat handle/Text #/etc (requires confirmation for security)
 
 PER USE
