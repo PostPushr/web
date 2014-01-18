@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/setup_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/setup"
+        android:textIsSelectable="false" />
+
+	<TextView
+        android:id="@+id/username_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/username"
+        android:textIsSelectable="false" />
+    
+	<EditText
+    	android:id="@+id/username_edittext"
+    	android:layout_width="wrap_content"
+    	android:layout_height="wrap_content"	
+		android:hint="@string/username_hint"
+		android:inputType="text|textCapWords" />
+
+	<TextView
+        android:id="@+id/password_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/password"
+        android:textIsSelectable="false" />
+    
+	<EditText
+    	android:id="@+id/password_edittext"
+    	android:layout_width="wrap_content"
+    	android:layout_height="wrap_content"	
+		android:hint="@string/password_hint"
+		android:inputType="text|textPassword" />
+
+	<TextView
+        android:id="@+id/name_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/name"
+        android:textIsSelectable="false" />
+    
+	<EditText
+    	android:id="@+id/name_edittext"
+    	android:layout_width="wrap_content"
+    	android:layout_height="wrap_content"	
+		android:hint="@string/name_hint"
+		android:inputType="text|textCapWords" />
+
+	<TextView
+        android:id="@+id/email_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/email"
+        android:textIsSelectable="false" />
+    
+	<EditText
+    	android:id="@+id/email_edittext"
+    	android:layout_width="wrap_content"
+    	android:layout_height="wrap_content"	
+		android:hint="@string/email_hint"
+		android:inputType="text|textCapWords" />
+
+	<TextView
+        android:id="@+id/credit_card_number_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/credit_card_number"
+        android:textIsSelectable="false" />
+    
+	<EditText
+    	android:id="@+id/credit_card_number_edittext"
+    	android:layout_width="wrap_content"
+    	android:layout_height="wrap_content"	
+		android:hint="@string/credit_card_number_hint"
+		android:inputType="text|textCapWords" />
+
+	<TextView
+        android:id="@+id/credit_card_expiration_date_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/credit_card_expiration_date"
+        android:textIsSelectable="false" />
+    
+	<EditText
+    	android:id="@+id/credit_card_expiration_date_edittext"
+    	android:layout_width="wrap_content"
+    	android:layout_height="wrap_content"	
+		android:hint="@string/credit_card_expiration_date_hint"
+		android:inputType="text|textCapWords" />
+
+	<TextView
+        android:id="@+id/credit_card_security_code_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/credit_card_security_code"
+        android:textIsSelectable="false" />
+    
+	<EditText
+    	android:id="@+id/credit_card_security_code_edittext"
+    	android:layout_width="wrap_content"
+    	android:layout_height="wrap_content"	
+		android:hint="@string/credit_card_security_code_hint"
+		android:inputType="text|textCapWords" />
+	
+	<TextView
+        android:id="@+id/address_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/address"
+        android:textIsSelectable="false" />
+    
+	<EditText
+    	android:id="@+id/address_edittext"
+    	android:layout_width="wrap_content"
+    	android:layout_height="wrap_content"	
+		android:hint="@string/address_hint"
+		android:inputType="text|textCapWords" />
+   
+
+</LinearLayout>
