@@ -1,25 +1,14 @@
 from jinja2 import Template, Environment, FileSystemLoader
 import requests, hashlib, os, subprocess, json
-import lob, pymongo, sendgrid, stripe, datetime
+import lob, pymongo, sendgrid, stripe, datetime, re
 from pygeocoder import Geocoder
-from tasks import execute_command
-
-bin_dir = os.environ['bin_dir']
-lob.api_key = os.environ['lob_api_key']
-s = sendgrid.Sendgrid(os.environ['s_user'], os.environ['s_pass'], secure=True)
-stripe.api_key = "sk_test_qnFVxzNRQbpEKusxV5DCa2CI"
-client = pymongo.MongoClient(os.environ['db'])
-db = client.postpushr
-users = db.users
-letters = db.letters
-postcards = db.postcards
+from tasks import wkhtmltopdf_letters
+from var import *
 
 
 def launch_celery():
-    p = subprocess.Popen("./celery.sh &", shell=True, close_fds=True)
+    p = subprocess.Popen("celery worker -q -A tasks > /dev/null 2>&1 &", shell=True, close_fds=True)
     p.wait()
-
-launch_celery()
 
 def create_stripe_cust(token,email):
 	try:
@@ -43,7 +32,7 @@ def save(html,user_id):
 	html_file = open(html_file_name, "w+b")
 	html_file.write(html)
 	cmd = "{0}/wkhtmltopdf {1} {2}".format(bin_dir,html_file_name,pdf_file_name)
-	execute_command.delay(cmd)
+	wkhtmltopdf_letters.delay(cmd)
 	return pdf_file_name
 
 def render_text(message):
@@ -118,10 +107,7 @@ def send_letter(user,to_name,to_address,body):
 		stripe.Charge.create(amount=150,currency="usd",customer=user.get("token"))
 
 		obj_loc = save(render_text(message), hashlib.md5(user.get("username")).hexdigest())
-		_object = lob.Object.create(name=hashlib.md5(user.get("username")+str(datetime.datetime.now())).hexdigest(), file="http://www."+os.environ['domain']+"/"+obj_loc, setting_id='100', quantity=1)
-		job = lob.Job.create(name=hashlib.md5(user.get("username")+str(datetime.datetime.now())).hexdigest(), to=to_address.id, objects=_object.id, from_address=from_address.id, packaging_id='1').to_dict()
-		letters.insert(job)
-		return job
+		return obj_loc
 	else:
 		return_unknown_address(user,to_address)
 

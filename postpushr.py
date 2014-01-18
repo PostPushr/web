@@ -9,6 +9,8 @@ from bson.objectid import ObjectId
 app = Flask(__name__)
 app.secret_key = os.environ['sk']
 
+launch_celery()
+
 @app.route('/', methods=['POST', 'GET'])
 def index():
 	if session.get('userid'):
