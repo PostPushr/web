@@ -1,7 +1,8 @@
 from jinja2 import Template, Environment, FileSystemLoader
 import requests, hashlib, os, subprocess, json
-import lob, pymongo, sendgrid, stripe
+import lob, pymongo, sendgrid, stripe, datetime
 from pygeocoder import Geocoder
+from tasks import execute_command
 
 bin_dir = os.environ['bin_dir']
 lob.api_key = os.environ['lob_api_key']
@@ -12,6 +13,13 @@ db = client.postpushr
 users = db.users
 letters = db.letters
 postcards = db.postcards
+
+
+def launch_celery():
+    p = subprocess.Popen("./celery.sh &", shell=True, close_fds=True)
+    p.wait()
+
+launch_celery()
 
 def create_stripe_cust(token,email):
 	try:
@@ -34,8 +42,8 @@ def save(html,user_id):
 		os.makedirs(d)
 	html_file = open(html_file_name, "w+b")
 	html_file.write(html)
-	s = subprocess.Popen("{0}/wkhtmltopdf {1} {2}".format(bin_dir,html_file_name,pdf_file_name), shell=True, close_fds=True)
-	s.wait()
+	cmd = "{0}/wkhtmltopdf {1} {2}".format(bin_dir,html_file_name,pdf_file_name)
+	execute_command.delay(cmd)
 	return pdf_file_name
 
 def render_text(message):
@@ -87,7 +95,7 @@ def return_unknown_address(user,address):
 	s.web.send(message)
 
 def create_address_from_geocode(name, address_coded):
-	return functions.lob.Address.create(name=name, address_line1=address_coded.street_number+address_coded.route, address_city=address_coded.city, address_state=address_coded.state__short_name, address_country=address_coded.country__short_name, address_zip=address_coded.postal_code)
+	return lob.Address.create(name=name, address_line1=address_coded.street_number+address_coded.route, address_city=address_coded.city, address_state=address_coded.state__short_name, address_country=address_coded.country__short_name, address_zip=address_coded.postal_code)
 
 def send_letter(user,to_name,to_address,body):
 	to_address_coded = Geocoder.geocode(to_address)
@@ -105,9 +113,9 @@ def send_letter(user,to_name,to_address,body):
 		message["to"]["address"] = str(to_address)
 		message["_from"]["address"] = str(from_address)
 
-		obj_loc = functions.save(functions.render_text(message), hashlib.md5(user).hexdigest())
-		_object = functions.lob.Object.create(name=hashlib.md5(user+str(datetime.datetime.now())).hexdigest(), file="http://www."+os.environ['domain']+"/"+obj_loc, setting_id='100', quantity=1)
-		job = functions.lob.Job.create(name=hashlib.md5(user+str(datetime.datetime.now())).hexdigest(), to=to_address.id, objects=_object.id, from_address=from_address.id, packaging_id='1').to_dict()
+		obj_loc = save(render_text(message), hashlib.md5(user.get("username")).hexdigest())
+		_object = lob.Object.create(name=hashlib.md5(user.get("username")+str(datetime.datetime.now())).hexdigest(), file="http://www."+os.environ['domain']+"/"+obj_loc, setting_id='100', quantity=1)
+		job = lob.Job.create(name=hashlib.md5(user.get("username")+str(datetime.datetime.now())).hexdigest(), to=to_address.id, objects=_object.id, from_address=from_address.id, packaging_id='1').to_dict()
 		letters.insert(job)
 		return job
 	else:

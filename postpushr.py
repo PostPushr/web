@@ -17,7 +17,7 @@ def index():
 		user = User(request.form.get('email'))
 		if user.is_valid():
 			if user.check_pass(request.form.get('password')):
-				session["userid"] = str(user["_id"])
+				session["userid"] = str(user.get("_id"))
 				return redirect(url_for('settings'))
 			else:
 				flash("Your password was incorrect.")

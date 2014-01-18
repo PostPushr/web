@@ -16,4 +16,4 @@ class User(object):
 			return None
 
 	def check_pass(self,passwd):
-		return functions.hash_password(passwd) == self.obj["pass"]	
+		return functions.hash_password(passwd) == self.obj["password"]	
