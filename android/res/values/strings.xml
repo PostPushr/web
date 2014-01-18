@@ -3,6 +3,23 @@
 
     <string name="app_name">PostPushr</string>
     <string name="action_settings">Settings</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="setup">Setup</string>
+    <string name="username">Username</string>
+    <string name="username_hint">Enter a username.</string>
+    <string name="password">Password</string>
+    <string name="password_hint">Enter a password.</string>
+    <string name="name">Name</string>
+    <string name="name_hint">Enter your full name.</string>
+    <string name="email">Email</string>
+    <string name="email_hint">Enter your email address.</string>
+    <string name="credit_card_number">Credit Card Number</string>
+    <string name="credit_card_number_hint">Enter your credit card number.</string>
+    <string name="credit_card_expiration_date">Credit Card Expiration Date</string>
+    <string name="credit_card_expiration_date_hint">Enter your credit card\'s expiration date.</string>
+    <string name="credit_card_security_code">Credit Card Security Code</string>
+    <string name="credit_card_security_code_hint">Enter your credit card\'s security code.</string>
+    <string name="address">Return Address</string>
+    <string name="address_hint">Enter your return address.</string>
+    
 
 </resources>
