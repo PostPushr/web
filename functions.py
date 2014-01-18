@@ -24,7 +24,7 @@ def jfail(reason):
 	return json.dumps({"status": "error","error": reason})
 
 def save(html,user):
-	user_id = hashlib.md5(user.get("username")).hexdigest()
+	user_id = hashlib.md5(user.get("username")+str(datetime.datetime.now())).hexdigest()
 	d = "static/gen/{0}/".format(user_id)
 	pdf_file_name = d+"{0}.pdf".format(user_id)
 	html_file_name = d+"{0}.html".format(user_id)
@@ -102,8 +102,8 @@ def send_letter(user,to_name,to_address,body):
 		from_address_coded = Geocoder.geocode(user.get('address'))
 		from_address = create_address_from_geocode(message["_from"]["name"], from_address_coded)
 
-		message["to"]["address"] = str(to_address)
-		message["_from"]["address"] = str(from_address)
+		message["to"]["address"] = str(to_address_coded).replace(",","<br>")
+		message["_from"]["address"] = str(from_address_coded).replace(",","<br>")
 
 		stripe.Charge.create(amount=150,currency="usd",customer=user.get("token"))
 
