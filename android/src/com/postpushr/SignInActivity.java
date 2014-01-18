@@ -12,10 +12,7 @@ public class SignInActivity extends Activity implements SignInListener {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_signin);
-		
-		System.err.println("hello");
-		
+		setContentView(R.layout.activity_signin);		
 		getFragmentManager().beginTransaction().add(R.id.signin_fragment_container, new SignInFragment()).commit();
 
 	}
