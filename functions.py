@@ -1,17 +1,25 @@
 from jinja2 import Template, Environment, FileSystemLoader
 import requests, hashlib, os, subprocess, json
-import lob, pymongo, sendgrid
+import lob, pymongo, sendgrid, stripe
 from pygeocoder import Geocoder
 
 bin_dir = os.environ['bin_dir']
 lob.api_key = os.environ['lob_api_key']
 s = sendgrid.Sendgrid(os.environ['s_user'], os.environ['s_pass'], secure=True)
+stripe.api_key = "sk_test_qnFVxzNRQbpEKusxV5DCa2CI"
 client = pymongo.MongoClient(os.environ['db'])
 db = client.postpushr
 users = db.users
 letters = db.letters
 postcards = db.postcards
 
+def create_stripe_cust(token,email):
+	try:
+		customer = stripe.Customer.create(card=token,description="PostPushr: "+email)
+		return customer.id
+	except stripe.error.CardError:
+		return None
+	
 def jsuccess():
 	return json.dumps({"status": "success"})
 
@@ -48,17 +56,18 @@ def remove_addresses():
 		lob.Address.delete(id=a.id)
 
 def create_user(username, hashed_password, **kwargs):
-	#Expect: Username, Password, Name, Email, Token, Snapchat, Address, ...
+	#Expect: Username, Password, Name, Token, Snapchat, Address, ...
 	kwargs["username"] = username
 	kwargs["password"] = hashed_password
-	return str(users.insert(**kwargs))
+	users.insert(kwargs)
+	return str(users.find_one({"username": username}))
 
 def sha1(text):
 	m = hashlib.sha1()
 	m.update(text)
 	return m.hexdigest()
 
-def hash_password(pasword):
+def hash_password(password):
 	return sha1(sha1(password)+sha1(os.environ["salt"]))
 
 def return_unknown_sender(email):
@@ -74,7 +83,7 @@ def return_unknown_address(user,address):
 	text = "Hello {0},\n\nYou are receiving this email because you tried to send a physical document via PostPushr to an invalid address. PostPushr could not recognize \"{1}\".\n\nPlease try to to send your document again.".format(user.get("name"),address)
 	html = "Hello {0},<br /><br />You are receiving this email because you tried to send a physical document via PostPushr to an invalid address. PostPushr could not recognize <pre>{1}</pre>.<br /><br />Please try to to send your document again.".format(user.get("name"),address)
 	message = sendgrid.Message(("errors@support.{0}".format(os.environ['domain']),"PostPushr Error Bot"), subject, text, html)
-	message.add_to(email,user.get("name"))
+	message.add_to(user.get("username"),user.get("name"))
 	s.web.send(message)
 
 def create_address_from_geocode(name, address_coded):

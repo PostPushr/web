@@ -1,0 +1,40 @@
+{% extends 'layout.html' %}
+{% block body %}
+  <div class="container">
+
+    <form class="form-signin" id="form" role="form" method="POST">
+      <h2 class="form-signin-heading" style="text-align:center;">PostPushr</h2>
+      <input type="email" class="form-control" placeholder="Email" name="email" id="email" value="{{email}}" readonly>
+      <input type="password" class="form-control" placeholder="Password" name="password" value="******" readonly>
+      <input type="text" class="form-control" placeholder="Name" name="name" id="name" required autofocus>
+      <input type="text" class="form-control" placeholder="Snapchat" name="snapchat" required>
+      <textarea name="address"  class="form-control last" placeholder="Address" required></textarea>
+      <button class="btn btn-lg btn-primary btn-block" type="submit">Register</button>
+    </form>
+  </div>
+<script>
+$(document).ready(function() {
+  jQuery.LiveAddress("{{smarty_key}}");
+  var handler = StripeCheckout.configure({
+    key: 'pk_test_bRZoGvGajV5TeFq28CmFyxYa',
+    image: 'http://nyparkour.com/wp-content/uploads/2013/01/envelope-9887.jpeg',
+    panelLabel: 'Register',
+    token: function(token, args) {
+      var $form = $('#form');
+      $form.append($('<input type="hidden" name="stripeToken">').val(token.id));
+      $form.get(0).submit();
+    }
+  });
+  $('#form').submit(function(event) {
+
+    handler.open({
+      name: 'PostPushr',
+      description: $('#name').val(),
+      email: $('#email').val()
+    });
+
+    return false;
+  });
+});
+</script>
+{% endblock %}

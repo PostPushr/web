@@ -11,4 +11,5 @@ pygeocoder==1.2.2
 pymongo==2.6.3
 requests==2.2.0
 sendgrid==0.1.4
+stripe==1.11.0
 wsgiref==0.1.2

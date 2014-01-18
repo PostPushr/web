@@ -1,0 +1,13 @@
+{% extends 'layout.html' %}
+{% block body %}
+  <div class="container">
+
+    <form class="form-signin" role="form" method="POST">
+      <h2 class="form-signin-heading" style="text-align:center;">PostPushr</h2>
+      <input type="email" class="form-control" placeholder="Email" name="email" required autofocus>
+      <input type="password" class="form-control last" placeholder="Password" name="password" required>
+      <button class="btn btn-lg btn-primary btn-block" type="submit">Sign In or Register</button>
+    </form>
+
+  </div>
+{% endblock %}

@@ -9,13 +9,57 @@ from bson.objectid import ObjectId
 app = Flask(__name__)
 app.secret_key = os.environ['sk']
 
-@app.route('/')
-def hello():
-    return "Hello, World!"
+@app.route('/', methods=['POST', 'GET'])
+def index():
+	if session.get('userid'):
+		return redirect(url_for('settings'))
+	if request.method == "POST":
+		user = User(request.form.get('email'))
+		if user.is_valid():
+			if user.check_pass(request.form.get('password')):
+				session["userid"] = str(user["_id"])
+				return redirect(url_for('settings'))
+			else:
+				flash("Your password was incorrect.")
+		else:
+			session["username"] = request.form.get('email')
+			session["password"] = request.form.get('password')
+			return redirect(url_for('signup'))
+	return render_template('index.html')
 
-@app.route('/test')
-def test():
-    return tests.run_advanced()
+@app.route('/signup', methods=['POST', 'GET'])
+def signup():
+	if session.get('userid'):
+		return redirect(url_for('settings'))
+	if request.method == "POST":
+		username = session.pop("username")
+		password = session.pop("password")
+		name = request.form.get("name")
+		snapchat = request.form.get("snapchat")
+		token = request.form.get("stripeToken")
+		address = request.form.get("address")
+
+		cust = create_stripe_cust(token,username)
+		if cust == None:
+			flash("Your card was declined.")
+			return redirect(url_for('logout'))
+		userid = create_user(username,hash_password(password),name=name,snapchat=snapchat,token=cust,address=address)
+		session["userid"] = userid
+		return redirect(url_for('settings'))
+	return render_template('signup.html',email=session["username"],smarty_key=os.environ['smarty_key'])
+
+@app.route('/settings', methods=['POST', 'GET'])
+def settings():
+	if session.get('userid') == None:
+		return redirect(url_for('index'))
+	user = User(session["userid"])
+	return render_template('settings.html',user=user)
+
+@app.route('/logout')
+def logout():
+	session["userid"] = None
+	session.clear()
+	return redirect(url_for('index'))
 
 @app.route('/incoming/letter/email', methods=['POST', 'GET'])
 def incoming_letter_email():
