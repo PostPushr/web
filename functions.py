@@ -119,11 +119,7 @@ def send_postcard(user,to_name,to_address,message):
 
 	if to_address_coded.valid_address:
 
-		to_name = to_name.replace("_"," ")
-		to_name = re.sub("@\w+."+os.environ["domain"],"",to_name)
-		to_name = ucfirst(to_name)
-
-		message = {"to": {"prefix": "", "name": to_name}, "_from": {"prefix": "", "name": user.get("name")}, "body": body}
+		message = {"to": {"prefix": "", "name": to_name}, "_from": {"prefix": "", "name": user.get("name")}, "message": message}
 
 		to_address = create_address_from_geocode(message["to"]["name"], to_address_coded)
 		try:

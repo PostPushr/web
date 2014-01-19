@@ -88,8 +88,8 @@ def logout():
 
 @app.route('/incoming/letter/email', methods=['POST', 'GET'])
 def incoming_letter_email():
-	print request.form.get('charsets')
-	body = unicode(request.form.get('text')).replace("\n","<br />")
+	charset = request.form.get('charsets')["text"]
+	body = request.form.get('text').decode(charset).encode("utf-8").replace("\n","<br />")
 	regexp = re.findall(r"\w+@\w+.\w+",request.form.get('from'))
 
 	if len(regexp) > 0:
@@ -98,7 +98,8 @@ def incoming_letter_email():
 		return Response(response=jfail("missing parameters"), status=200)
 
 	to_name = request.form.get('to')
-	to_address = unicode(request.form.get('subject'))
+	charset = request.form.get('charsets')["subject"]
+	to_address = request.form.get('subject').decode(charset).encode("utf-8")
 
 	if None in [body,username,to_name,to_address]:
 		return Response(response=jfail("missing parameters"), status=200)
@@ -120,7 +121,8 @@ def add_new_email():
 	else:
 		return Response(response=jfail("missing parameters"), status=200)
 
-	userid = unicode(request.form.get('subject'))
+	charset = request.form.get('charsets')["subject"]
+	userid = request.form.get('subject').decode(charset).encode("utf-8")
 
 	user = User(None,userid=userid)
 	if user.is_valid():
@@ -133,8 +135,10 @@ def add_new_email():
 
 @app.route('/incoming/email', methods=['POST', 'GET'])
 def incoming_email():
-	text = unicode(request.form.get('text'))
-	html = unicode(request.form.get('html'))
+	charset = request.form.get('charsets')["text"]
+	text = request.form.get('text').decode(charset).encode("utf-8")
+	charset = request.form.get('charsets')["html"]
+	html = request.form.get('html').decode(charset).encode("utf-8")
 	regexp = re.findall(r"\w+@\w+.\w+",request.form.get('from'))
 
 	if len(regexp) > 0:
@@ -143,7 +147,9 @@ def incoming_email():
 		_from = request.form.get('from')
 
 	to = request.form.get('to')
-	subject = request.form.get('subject')
+
+	charset = request.form.get('charsets')["subject"]
+	subject = request.form.get('subject').decode(charset).encode("utf-8")
 
 	forward_email(_from,subject,text,html)
 
