@@ -40,7 +40,7 @@
         android:textIsSelectable="false" />
 
     <EditText
-        android:id="@+id/register_name_edittext"
+        android:id="@+id/recipient_message_edittext"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Enter your message to the recipient, including any salutations and closings."
