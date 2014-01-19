@@ -2,10 +2,11 @@
 
 from flask import Flask, Response, session, redirect, url_for, escape, request, render_template, g, flash, make_response
 from functions import *
-import tests
+import tasks
 from User import User
 from bson.objectid import ObjectId
 from dateutil import parser
+import arrow, urllib
 
 app = Flask(__name__)
 app.secret_key = os.environ['sk']
@@ -58,12 +59,12 @@ def documents():
 	user = User(None,userid=session["userid"])
 	return render_template('documents.html',user=user,letters=letters.find({"from_address.email": user.get("username")}))
 
-@app.route('/document/<_hash>')
-def get_document(_hash):
+@app.route('/letter/<_hash>')
+def get_letter(_hash):
 	if session.get('userid') == None:
 		return redirect(url_for('index'))
-	user = User(None,userid=session["userid"])
-	return render_template('documents.html',user=user,letters=letters.find({"from_address.email": user.get("username")}))
+	l = letters.find_one({"jobid": _hash})
+	return render_template('document.html',l=l)
 
 @app.route('/logout')
 def logout():
@@ -103,7 +104,15 @@ def ucfirst_filter(txt):
 
 @app.template_filter('dt')
 def dt_filer(dt):
-	return parser.parse(dt).strftime("%x")
+	return arrow.get(parser.parse(dt)).format("MMMM D, YYYY")
+
+@app.template_filter('s3URL')
+def s3URL(_hash):
+	return tasks.s3_upload(_hash)
+
+@app.template_filter('escURL')
+def escURL(url):
+	return urllib.quote_plus(url)
 
 if __name__ == '__main__':
 	if os.environ.get('PORT'):
