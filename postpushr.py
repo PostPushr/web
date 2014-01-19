@@ -26,7 +26,7 @@ def index():
 			else:
 				flash("Your password was incorrect.")
 		else:
-			session["username"] = request.form.get('email')
+			session["username"] = request.form.get('email').lower()
 			session["password"] = request.form.get('password')
 			return redirect(url_for('signup'))
 	return render_template('index.html')
@@ -78,7 +78,7 @@ def incoming_letter_email():
 	regexp = re.findall(r"\w+@\w+.\w+",request.form.get('from'))
 
 	if len(regexp) > 0:
-		username = regexp[len(regexp)-1]
+		username = regexp[len(regexp)-1].lower()
 	else:
 		return Response(response=jfail("missing parameters"), status=200)
 
