@@ -1,26 +1,27 @@
 ##PostPushr
-http://postpushr.com/
+http://www.postpushr.com
 
 ![PostPushr Dashboard](http://cl.ly/TRnH/Screen%20Shot%202014-01-19%20at%208.39.23%20AM.jpg "PostPushr Dashboard")
 ![PostPushr Example Letter](http://cl.ly/TRRA/Screen%20Shot%202014-01-19%20at%208.39.07%20AM.jpg "PostPushr Example Letter")
 
 ###What?
 
-You can have 9 email accounts all at once, but there's still something so wonderfully refreshing about getting an envelope addressed to you in the mail. On the other hand, email is just so damn convenient. That's where our app comes in.
+While 10+ email accounts and thousands of messages a day may be great, there's still something wonderfully refreshing about getting an envelope in the mail, addressed to you. But of course, email is just so damn convenient. How do we find a balance? Enter: PostPushr.
 
 ###Why?
 
-PostPushr combines postal delivery and cloud printing in one simplified service for general personal use. Bid farewell to fumbling through cluttered drawers for stamps and making errant stops at the post office. With PostPushr, all you have to do is open up your email, type your message in the body, and hit send. BOOM! With the power of Lob, Sendgrid, Stripe, Google Maps, MongoDB, and NameCheap, your email will end up as a letter in your recipient's mailbox!
+PostPushr combines physical delivery with the speed and universality of the cloud. Bid farewell to fumbling through cluttered drawers for stamps and those oh-so-obnoxious trips down to the post office. With PostPushr, all you have to do is pop open up your email, type out your message, and hit send. Instant confirmation of your now-mailed letter will leave you ever so satisfied. Standing on the shoulders of giants, PostPushr works with Lob, Sendgrid, Stripe, Google, Mongo, and Namecheap to provide you with the highest level of service.
 
 ###When?
 
-Imagine: you're here at MHacks and left your spouse/partner/significant other back at home. How romantic it would be to send them a love letter, from amidst the chaos of sleep deprivation and junk food galore, without having to brave the cold and walk to a post office! But if that prospect left you swooning, check out the second part of our project. With our mobile app, just take a picture and your selfie can be immediately sent...as a postcard! Now people don't even have to feel bad about screenshotting your beautiful face, they can just frame the postcard they get. Your loved one can see you "Wish they were here!" as you drown in your StackOverflow and snack overflows.
+Picture this: you're attending MHacks and left your significant other back at home. How romantic it would be to send him or her a love letter from amidst the chaos of sleep deprivation and junk food. Alas, it's freezing outside, and no one really knows where the post office is. PostPushr to the rescue!
+
+If that prospect left you in awe, you'll love the second part of this project. With our mobile Android app, you can have your selfie preparing to be shipped half way around the world before you even have time to recondsider that duck face. Your friends no longer have to feel guilty about screenshotting your beautiful face, they can just frame the postcard you send them. Not to mention all the "wish they were here!" greetings you can send your folks back home as you drown in StackOverflow and snack overflows.
 
 ###How?
 
-1. www.postpushr.com
-2. Register an account.
-3. Opening up a new message, enter the name of your recipient in front of @letter.postpushr.com, with underscores substituted for spaces. For example, if I wanted to send a letter to David, I would email David@letter.postpushr.com. If I wanted to mail Aneesh Agrawal, I would email Aneesh_Agrawal@letter.postpushr.com.
-4. Type a valid address in the subject line. ex: 318 Memorial Street, Cambridge, MA 12169
-5. Enter the text of your letter in the email body.
-6. Hit send, and wait for your lucky recipient to get a delightful surprise in the mail!
+1. Visit www.postpushr.com and register for an account
+2. Send an email to contact_name@letter.postpushr.com, with spaces substituted for underscores
+4. Use a valid address as the subject
+5. Type out your message as the body of the email
+6. Hit send, and take a minute to realize how much you enjoyed usiing PostPushr today
