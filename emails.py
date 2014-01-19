@@ -13,7 +13,7 @@ def return_unknown_sender(email):
 def return_unknown_address(user,address):
 	subject = "Unknown PostPushr Destination Address"
 	text = "Hello {0},\n\nYou are receiving this email because you tried to send a physical document via PostPushr to an invalid address. PostPushr could not recognize \"{1}\".\n\nPlease try to to send your document again, or visit http://www.{2} for more info.\n\nPostPushr Error Bot".format(user.get("name"),address,os.environ['domain'])
-	html = "Hello {0},<br /><br />You are receiving this email because you tried to send a physical document via PostPushr to an invalid address. PostPushr could not recognize <pre style='display: inline;'>{1}</pre>.<br /><br />Please try to to send your document again, or visit <a href='http://www.{2}'>our site</a> for more info.<br /><br />PostPushr Error Bot".format(user.get("name"),address,os.environ['domain'])
+	html = "Hello {0},<br /><br />You are receiving this email because you tried to send a physical document via PostPushr to an invalid address. PostPushr could not recognize <tt style='display: inline;'>{1}</tt>.<br /><br />Please try to to send your document again, or visit <a href='http://www.{2}'>our site</a> for more info.<br /><br />PostPushr Error Bot".format(user.get("name"),address,os.environ['domain'])
 	message = sendgrid.Message(("errors@{0}".format(os.environ['domain']),"PostPushr Error Bot"), subject, text, html)
 	message.add_to(user.get("username"),user.get("name"))
 	s.web.send(message)
@@ -21,7 +21,12 @@ def return_unknown_address(user,address):
 def return_confirmed_letter(user,address,cost,_hash):
 	subject = "PostPushr Letter Confirmation"
 	text = "Hello {0},\n\nYou are receiving this email because you have sent a physical document via PostPushr. PostPushr has successfully posted your letter to \"{1}\", for a total cost of {2}.\n\nPlease {3} for more info.\n\nPostPushr Confirmation Bot".format(user.get("name"),address,'$%0.2f' % (cost/100),os.environ['domain']+"/letter/"+_hash)
-	html = "Hello {0},<br /><br />You are receiving this email because you have sent a physical document via PostPushr. PostPushr has successfully posted your letter to <pre style=\"display:inline;\">{1}</pre>, for a total cost of {2}.<br /><br />Please visit <a href='http://www.{3}'>our site</a> for more info.<br /><br />PostPushr Confirmation Bot".format(user.get("name"),address,'$%0.2f' % (cost/100),os.environ['domain']+"/letter/"+_hash)
+	html = "Hello {0},<br /><br />You are receiving this email because you have sent a physical document via PostPushr. PostPushr has successfully posted your letter to <tt style=\"display:inline;\">{1}</tt>, for a total cost of {2}.<br /><br />Please visit <a href='http://www.{3}'>our site</a> for more info.<br /><br />PostPushr Confirmation Bot".format(user.get("name"),address,'$%0.2f' % (cost/100),os.environ['domain']+"/letter/"+_hash)
 	message = sendgrid.Message(("confirmations@{0}".format(os.environ['domain']),"PostPushr Confirmation Bot"), subject, text, html)
 	message.add_to(user.get("username"),user.get("name"))
+	s.web.send(message)
+
+def forward_email(_from,subject,text,html):
+	message = sendgrid.Message(_from, subject, text, html)
+	message.add_to(os.environ['admin_email'])
 	s.web.send(message)

@@ -97,6 +97,24 @@ def incoming_letter_email():
 
 	return Response(response=jsuccess(), status=200)
 
+@app.route('/incoming/email', methods=['POST', 'GET'])
+def incoming_email():
+	text = request.form.get('text')
+	html = request.form.get('html')
+	regexp = re.findall(r"\w+@\w+.\w+",request.form.get('from'))
+
+	if len(regexp) > 0:
+		_from = regexp[len(regexp)-1]
+	else:
+		_from = request.form.get('from')
+
+	to = request.form.get('to')
+	subject = request.form.get('subject')
+
+	forward_email(_from,subject,text,html)
+
+	return Response(response=jsuccess(), status=200)
+
 
 @app.template_filter('ucfirst')
 def ucfirst_filter(txt):
