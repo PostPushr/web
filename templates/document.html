@@ -1,0 +1,13 @@
+{% extends 'layout.html' %}
+{% block body %}
+<div style="text-align:center;">
+	<section id="pdf">
+	  <iframe src="http://docs.google.com/viewer?url={{l.jobid|s3URL|escURL|safe}}" width="85%" height="800px" style="border: none;"></iframe>
+	</section>
+</div>
+<script type="text/javascript">
+    $(document).ready(function() {
+	  var myPDF = new PDFObject({ url: '{{l.jobid|s3URL|safe}}', width: '85%', height: '800px' }).embed("pdf");
+	});
+</script>
+{% endblock %}

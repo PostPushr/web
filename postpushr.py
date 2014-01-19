@@ -2,10 +2,11 @@
 
 from flask import Flask, Response, session, redirect, url_for, escape, request, render_template, g, flash, make_response
 from functions import *
-import tests
+import tasks
 from User import User
 from bson.objectid import ObjectId
 from dateutil import parser
+import arrow, urllib
 
 app = Flask(__name__)
 app.secret_key = os.environ['sk']
@@ -15,13 +16,13 @@ launch_celery()
 @app.route('/', methods=['POST', 'GET'])
 def index():
 	if session.get('userid'):
-		return redirect(url_for('settings'))
+		return redirect(url_for('documents'))
 	if request.method == "POST":
 		user = User(request.form.get('email'))
 		if user.is_valid():
 			if user.check_pass(request.form.get('password')):
 				session["userid"] = str(user.get("_id"))
-				return redirect(url_for('settings'))
+				return redirect(url_for('documents'))
 			else:
 				flash("Your password was incorrect.")
 		else:
@@ -33,7 +34,7 @@ def index():
 @app.route('/signup', methods=['POST', 'GET'])
 def signup():
 	if session.get('userid'):
-		return redirect(url_for('settings'))
+		return redirect(url_for('documents'))
 	if request.method == "POST":
 		username = session.pop("username")
 		password = session.pop("password")
@@ -48,15 +49,22 @@ def signup():
 			return redirect(url_for('logout'))
 		userid = create_user(username,hash_password(password),name=name,snapchat=snapchat,token=cust,address=address)
 		session["userid"] = userid
-		return redirect(url_for('settings'))
+		return redirect(url_for('documents'))
 	return render_template('signup.html',email=session["username"],smarty_key=os.environ['smarty_key'])
 
-@app.route('/settings', methods=['POST', 'GET'])
-def settings():
+@app.route('/documents', methods=['POST', 'GET'])
+def documents():
 	if session.get('userid') == None:
 		return redirect(url_for('index'))
 	user = User(None,userid=session["userid"])
-	return render_template('settings.html',user=user,letters=letters.find({"from_address.email": user.get("username")}))
+	return render_template('documents.html',user=user,letters=letters.find({"from_address.email": user.get("username")}))
+
+@app.route('/letter/<_hash>')
+def get_letter(_hash):
+	if session.get('userid') == None:
+		return redirect(url_for('index'))
+	l = letters.find_one({"jobid": _hash})
+	return render_template('document.html',l=l)
 
 @app.route('/logout')
 def logout():
@@ -68,7 +76,7 @@ def logout():
 def incoming_letter_email():
 	body = request.form.get('text')
 	regexp = re.findall(r"\w+@\w+.\w+",request.form.get('from'))
-	
+
 	if len(regexp) > 0:
 		username = regexp[len(regexp)-1]
 	else:
@@ -96,7 +104,15 @@ def ucfirst_filter(txt):
 
 @app.template_filter('dt')
 def dt_filer(dt):
-	return parser.parse(dt).strftime("%x")
+	return arrow.get(parser.parse(dt)).format("MMMM D, YYYY")
+
+@app.template_filter('s3URL')
+def s3URL(_hash):
+	return tasks.s3_upload(_hash)
+
+@app.template_filter('escURL')
+def escURL(url):
+	return urllib.quote_plus(url)
 
 if __name__ == '__main__':
 	if os.environ.get('PORT'):

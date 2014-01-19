@@ -1,8 +1,0 @@
-{% extends 'layout.html' %}
-{% block body %}
-<div style="text-align:center;">
-{% for l in letters %}
-<span class="letter">Letter to {{l.to.name|ucfirst}} on {{l.date_created|dt}} [{{l.status}} - ${{'%0.2f' % ((l.price|float)*1.75)}}]</span><br /><br />
-{% endfor %}
-</div>
-{% endblock %}

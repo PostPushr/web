@@ -1,0 +1,8 @@
+{% extends 'layout.html' %}
+{% block body %}
+<div style="text-align:center;">
+{% for l in letters %}
+<span class="letter"> <a class="btn btn-primary" href="{{url_for('get_letter',_hash=l.jobid)}}">Letter to {{l.job.to.name|ucfirst}} on {{l.job.date_created|dt}} [{{l.job.status}} - ${{'%0.2f' % ((l.job.price|float)*1.75)}}]</a></span><br /><br />
+{% endfor %}
+</div>
+{% endblock %}
