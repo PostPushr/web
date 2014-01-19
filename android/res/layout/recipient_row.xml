@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/recipient_name_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Recipient Name"
+        android:textIsSelectable="false" />
+
+    <EditText
+        android:id="@+id/recipient_name_edittext"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint=""
+        android:inputType="text|textCapWords" />
+
+    <TextView
+        android:id="@+id/recipient_address_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Recipient Address"
+        android:textIsSelectable="false" />
+
+    <EditText
+        android:id="@+id/recipient_address_edittext"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint=""
+        android:inputType="text|textMultiLine" />
+
+    <TextView
+        android:id="@+id/recipient_message_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Message"
+        android:textIsSelectable="false" />
+
+    <EditText
+        android:id="@+id/register_name_edittext"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter your message to the recipient, including any salutations and closings."
+        android:inputType="text|textMultiLine" />
+
+</LinearLayout>

@@ -120,7 +120,6 @@ def add_new_email():
 		return Response(response=jfail("missing parameters"), status=200)
 
 	userid = unicode(request.form.get('subject')).encode('ascii','xmlcharrefreplace')
-
 	user = User(None,userid=userid)
 	if user.is_valid():
 		user.add_email(new_email)
@@ -142,7 +141,9 @@ def incoming_email():
 		_from = request.form.get('from')
 
 	to = request.form.get('to')
-	subject = request.form.get('subject')
+
+	charset = request.form.get('charsets')["subject"]
+	subject = request.form.get('subject').decode(charset).encode("utf-8")
 
 	forward_email(_from,subject,text,html)
 
