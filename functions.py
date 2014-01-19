@@ -19,7 +19,7 @@ def create_stripe_cust(token,email):
 	try:
 		customer = stripe.Customer.create(card=token,description="PostPushr: "+email)
 		return customer.id
-	except stripe.error.CardError:
+	except Exception:
 		return None
 	
 def jsuccess():
