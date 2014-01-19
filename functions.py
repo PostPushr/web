@@ -8,8 +8,11 @@ from emails import *
 
 
 def launch_celery():
-    p = subprocess.Popen("celery worker -q -A tasks > /dev/null 2>&1 &", shell=True, close_fds=True)
-    p.wait()
+	if os.environ.get('dev') == "True":
+		p = subprocess.Popen("celery worker -q -A tasks &", shell=True, close_fds=True)
+	else:
+		p = subprocess.Popen("celery worker -q -A tasks > /dev/null 2>&1 &", shell=True, close_fds=True)
+	p.wait()
 
 def create_stripe_cust(token,email):
 	try:
