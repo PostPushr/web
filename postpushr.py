@@ -67,7 +67,13 @@ def logout():
 @app.route('/incoming/letter/email', methods=['POST', 'GET'])
 def incoming_letter_email():
 	body = request.form.get('text')
-	username = request.form.get('from')
+	regexp = re.findall(r"\w+@\w+.\w+",request.form.get('from'))
+	
+	if len(regexp) > 0:
+		username = regexp[len(regexp)-1]
+	else:
+		return Response(response=jfail("missing parameters"), status=200)
+
 	to_name = request.form.get('to')
 	to_address = request.form.get('subject')
 
