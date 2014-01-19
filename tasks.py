@@ -76,7 +76,6 @@ def wkhtmltopdf_postcards(_hash, image, message, user, to_address, from_address,
 	postcards.insert({"jobid": _hash, "job": job})
 	cost = int(float(job["price"])*1.75*100)
 	stripe.Charge.create(amount=cost,currency="usd",customer=user.get("token"))
-	return json.dumps({"status": "success", "results": {"price": '$%0.2f' % (float(cost)/100.0), "date": arrow.get(parser.parse(job["date_created"])).format("h:m A MMMM D, YYYY")}}) 
 	
 
 

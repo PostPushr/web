@@ -13,7 +13,7 @@ app.secret_key = os.environ['sk']
 
 launch_celery()
 
-@app.route('/api/login', methods=['POST', 'GET'])
+@app.route('/api/login', methods=['POST'])
 def api_login():
 	email = request.form.get('email')
 	password = request.form.get('password')
@@ -27,7 +27,32 @@ def api_login():
 	else:
 		return Response(response=jfail("user does not exist"), status=200)
 
-@app.route('/api/create/postcard', methods=['POST', 'GET'])
+@app.route('/api/register', methods=['POST'])
+def api_register():
+	username = request.form.get('email')
+	password = request.form.get('password')
+	name = request.form.get('name')
+	address = request.form.get('address')
+	token = request.form.get('token')
+
+	cust = create_stripe_cust(token,username)
+	if cust == None:
+		return jfail('card was declined')
+
+	userid = create_user(username,password,name=name,token=cust,address=address)
+
+@app.route('/api/create/callback', methods=['POST'])
+def api_postcard_callback():
+	txid = request.form.get('txid')
+
+	job = postcards.find_one({'jobid': txid})
+	if job == None:
+		return json.dumps({"status": "pending"})
+
+	cost = int(float(job["price"])*1.75*100)
+	return json.dumps({"status": "success", "results": {"price": '$%0.2f' % (float(cost)/100.0), "date": arrow.get(parser.parse(job["date_created"])).format("h:m A MMMM D, YYYY")}}) 
+
+@app.route('/api/create/postcard', methods=['POST'])
 def api_postcard_create():
 	username = request.form.get('username')
 	password = request.form.get('password')
