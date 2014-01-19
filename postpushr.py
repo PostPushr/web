@@ -28,7 +28,7 @@ def api_login():
 		return Response(response=jfail("user does not exist"), status=200)
 
 @app.route('/api/create/postcard', methods=['POST', 'GET'])
-def api_login():
+def api_postcard_create():
 	username = request.form.get('username')
 	password = request.form.get('password')
 	name = request.form.get('name')
