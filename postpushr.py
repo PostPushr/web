@@ -35,6 +35,8 @@ def api_register():
 	address = request.form.get('address')
 	token = request.form.get('token')
 
+	if User(email).is_valid():
+		return jfail('username taken')
 	cust = create_stripe_cust(token,username)
 	if cust == None:
 		return jfail('card was declined')
@@ -99,7 +101,9 @@ def signup():
 		snapchat = request.form.get("snapchat")
 		token = request.form.get("stripeToken")
 		address = request.form.get("address")
-
+		if User(username).is_valid():
+			flash("That email has already been registered.")
+			return redirect(url_for('logout'))
 		cust = create_stripe_cust(token,username)
 		if cust == None:
 			flash("Your card was declined.")
