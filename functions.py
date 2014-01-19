@@ -88,7 +88,7 @@ def send_letter(user,to_name,to_address,body):
 		to_name = re.sub("@\w+."+os.environ["domain"],"",to_name)
 		to_name = ucfirst(to_name)
 
-		message = {"to": {"prefix": "Dear", "name": to_name}, "_from": {"prefix": "Sincerely,", "name": user.get("name")}, "body": body}
+		message = {"to": {"prefix": "", "name": to_name}, "_from": {"prefix": "", "name": user.get("name")}, "body": body}
 
 		to_address = create_address_from_geocode(message["to"]["name"], to_address_coded)
 
