@@ -57,7 +57,7 @@ def documents():
 	if session.get('userid') == None:
 		return redirect(url_for('index'))
 	user = User(None,userid=session["userid"])
-	return render_template('documents.html',user=user,letters=letters.find({"from_address.email": user.get("username")}))
+	return render_template('documents.html',user=user,letters=letters.find({"job.from_address.email": user.get("username")}))
 
 @app.route('/letter/<_hash>')
 def get_letter(_hash):
