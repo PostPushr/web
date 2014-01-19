@@ -15,13 +15,13 @@ launch_celery()
 
 @app.route('/api/login', methods=['POST'])
 def api_login():
-	email = request.form.get('email')
+	username = request.form.get('email')
 	password = request.form.get('password')
 
-	if None in [email,password]:
+	if None in [username,password]:
 		return Response(response=jfail("missing required parameters"), status=200)
 
-	user = User(email)
+	user = User(username)
 	if user.is_valid():
 		if user.check_pass_hash(password):
 			return Response(response=api_user_json(user), status=200)
@@ -32,16 +32,16 @@ def api_login():
 
 @app.route('/api/register', methods=['POST'])
 def api_register():
-	email = request.form.get('email')
+	username = request.form.get('email')
 	password = request.form.get('password')
 	name = request.form.get('name')
 	address = request.form.get('address')
 	token = request.form.get('token')
 
-	if None in [email,password,name,address,token]:
+	if None in [username,password,name,address,token]:
 		return Response(response=jfail("missing required parameters"), status=200)
 
-	if User(email).is_valid():
+	if User(username).is_valid():
 		return Response(response=jfail('username taken'), status=200)
 	cust = create_stripe_cust(token,username)
 	if cust == None:
