@@ -30,7 +30,10 @@ class User(object):
 			return None
 
 	def check_pass(self,passwd):
-		return functions.hash_password(passwd) == self.obj["password"]	
+		return self.check_pass_hash(functions.hash_password(passwd))	
+
+	def check_pass_hash(self,passwd):
+		return passwd == self.obj["password"]	
 
 	def add_email(self,email):
 		if functions.users.find({"emails":{"$in":[email]}}).count() == 0:

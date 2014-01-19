@@ -3,7 +3,7 @@ from celery import Celery, task
 from var import *
 from emails import *
 
-celery = Celery('tasks', broker=os.environ['db'])
+celery = Celery('tasks', broker=os.environ['db'], backend=os.environ['db'])
 
 @celery.task()
 def wkhtmltopdf_letters(cmd,user,_hash,to_address,to_address_coded,from_address):
@@ -22,7 +22,7 @@ def wkhtmltopdf_letters(cmd,user,_hash,to_address,to_address_coded,from_address)
 	return job
 
 @celery.task()
-def wkhtmltopdf_postcards(cmd,user,_hash,to_address,to_address_coded,from_address,message):
+def wkhtmltopdf_postcards(cmd,user,_hash,to_address,to_address_coded,from_address,message, p):
 	d = "static/gen/{0}/".format(_hash)
 	obj_loc = d+"{0}.pdf".format(_hash)
 	s = subprocess.Popen(cmd, shell=True, close_fds=True)
@@ -50,6 +50,24 @@ def s3_upload(dest_hash, acl='public-read'):
 
     sml = b.new_key(key_name)
     sml.set_contents_from_filename("static/gen/" + dest_hash + "/" + dest_hash + ".pdf")
+    sml.set_acl(acl)
+
+    return sml.generate_url(expires_in=300)
+
+
+@celery.task()
+def s3_upload_image(image, userid, acl='public-read'):
+    key_name = "postcards/" + userid + "/" + userid + ".pdf"
+
+    # Connect to S3 and upload file.
+    conn = boto.connect_s3()
+    b = conn.get_bucket(os.environ["S3_BUCKET"])
+
+    if b.get_key(key_name) != None:
+        return b.get_key(key_name).generate_url(expires_in=300)
+
+    sml = b.new_key(key_name)
+    sml.set_contents_from_file(image)
     sml.set_acl(acl)
 
     return sml.generate_url(expires_in=300)

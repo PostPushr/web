@@ -20,8 +20,26 @@ def api_login():
 
 	user = User(email)
 	if user.is_valid():
-		if user.check_pass(password):
+		if user.check_pass_hash(password):
 			return Response(response=api_user_json(user), status=200)
+		else:
+			return Response(response=jfail("incorrect password"), status=200)
+	else:
+		return Response(response=jfail("user does not exist"), status=200)
+
+@app.route('/api/create/postcard', methods=['POST', 'GET'])
+def api_login():
+	username = request.form.get('username')
+	password = request.form.get('password')
+	name = request.form.get('name')
+	message = request.form.get('message')
+	address = request.form.get('address')
+	picture = request.files['picture']
+
+	user = User(username)
+	if user.is_valid():
+		if user.check_pass_hash(password):
+			return Response(response=send_postcard(user,name,address,message,picture), status=200)
 		else:
 			return Response(response=jfail("incorrect password"), status=200)
 	else:

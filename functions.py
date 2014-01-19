@@ -1,8 +1,9 @@
 from jinja2 import Template, Environment, FileSystemLoader
+from werkzeug import secure_filename
 import requests, hashlib, os, subprocess, json, time, codecs
 import lob, pymongo, stripe, datetime, re, boto
 from pygeocoder import Geocoder, GeocoderError
-from tasks import wkhtmltopdf_letters, s3_upload
+from tasks import wkhtmltopdf_letters, s3_upload, wkhtmltopdf_postcards, s3_upload_image
 from var import *
 from emails import *
 
@@ -40,10 +41,31 @@ def save_letter(html, user, to_address, to_address_coded, from_address):
 	wkhtmltopdf_letters.delay(cmd, user, _hash, to_address, str(to_address_coded), from_address)
 	return pdf_file_name
 
+def save_postcard(html, user, to_address, to_address_coded, from_address):
+	_hash = hashlib.md5(user.get("username")+str(datetime.datetime.now())).hexdigest()
+	d = "static/gen/{0}/".format(_hash)
+	pdf_file_name = d+"{0}.pdf".format(_hash)
+	html_file_name = d+"{0}.html".format(_hash)
+	if not os.path.exists(d):
+		os.makedirs(d)
+	html_file = codecs.open(html_file_name, "w+b", "utf-8-sig")
+	html_file.write(html)
+	cmd = "{0}/wkhtmltopdf --encoding utf8 -s Letter {1} {2}".format(bin_dir,html_file_name,pdf_file_name)
+	wkhtmltopdf_letters.delay(cmd, user, _hash, to_address, str(to_address_coded), from_address)
+	return pdf_file_name
+
 def render_text(message):
 	env = Environment(loader=FileSystemLoader('templates'))
 	template = env.get_template('pdf.html')
 	generated_html = template.render(message=message)
+	return generated_html
+
+def render_image(image,userid):
+	env = Environment(loader=FileSystemLoader('templates'))
+	template = env.get_template('postcard.html')
+	url = tasks.s3_upload_image.delay(image,userid)
+	url.wait()
+	generated_html = template.render(img=url.get())
 	return generated_html
 
 def render_html(html):
@@ -111,7 +133,7 @@ def send_letter(user,to_name,to_address,body):
 		return_unknown_address(user,to_address)
 		return
 
-def send_postcard(user,to_name,to_address,message):
+def send_postcard(user,to_name,to_address,message,picture):
 	try:
 		to_address_coded = Geocoder.geocode(to_address)
 	except GeocoderError:
@@ -119,25 +141,24 @@ def send_postcard(user,to_name,to_address,message):
 
 	if to_address_coded.valid_address:
 
-		message = {"to": {"prefix": "", "name": to_name}, "_from": {"prefix": "", "name": user.get("name")}, "message": message}
+		back = {"to": {"prefix": "", "name": to_name}, "_from": {"prefix": "", "name": user.get("name")}, "message": message}
 
-		to_address = create_address_from_geocode(message["to"]["name"], to_address_coded)
+		to_address = create_address_from_geocode(back["to"]["name"], to_address_coded)
 		try:
 			from_address_coded = Geocoder.geocode(user.get('address'))
 		except GeocoderError:
 			time.sleep(0.5)
 			from_address_coded = Geocoder.geocode(user.get('address'))
 
-		from_address = create_address_from_geocode(message["_from"]["name"], from_address_coded, email=user.get('username'))
+		from_address = create_address_from_geocode(back["_from"]["name"], from_address_coded, email=user.get('username'))
 
-		message["to"]["address"] = str(to_address_coded).replace(",","<br>")
-		message["_from"]["address"] = str(from_address_coded).replace(",","<br>")
+		body["to"]["address"] = str(to_address_coded)
+		body["_from"]["address"] = str(from_address_coded)
 
-		obj_loc = save_letter(render_text(message), user, to_address, to_address_coded, from_address)
-		return obj_loc
+		result = save_postcard(render_image(message), user, to_address, to_address_coded, from_address)
+		return result
 	else:
 		return jfail("invalid address")
-		return
 
 
 def api_user_json(user):
