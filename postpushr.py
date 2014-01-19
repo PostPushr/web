@@ -203,8 +203,7 @@ def incoming_email():
 
 	to = request.form.get('to')
 
-	charset = request.form.get('charsets')["subject"]
-	subject = request.form.get('subject').decode(charset).encode("utf-8")
+	subject = unicode(request.form.get('subject')).encode('ascii','xmlcharrefreplace')
 
 	forward_email(_from,subject,text,html)
 
