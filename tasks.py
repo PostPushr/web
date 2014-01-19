@@ -1,4 +1,4 @@
-import os, subprocess, lob, hashlib, datetime, boto
+import os, subprocess, lob, hashlib, datetime, boto, stripe
 from celery import Celery, task
 from var import *
 
@@ -15,6 +15,7 @@ def wkhtmltopdf_letters(cmd,user,_hash,to_address,from_address):
 	job = lob.Job.create(name=_hash, to=to_address.id, objects=_object.id, from_address=from_address.id, packaging_id='1').to_dict()
 	letters.insert({"jobid": _hash, "job": job})
 	s3_upload.delay(_hash)
+	stripe.Charge.create(amount=float(job["price"])*1.75,currency="usd",customer=user.get("token"))
 	return job
 
 @celery.task()

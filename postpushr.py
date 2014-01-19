@@ -15,13 +15,13 @@ launch_celery()
 @app.route('/', methods=['POST', 'GET'])
 def index():
 	if session.get('userid'):
-		return redirect(url_for('settings'))
+		return redirect(url_for('documents'))
 	if request.method == "POST":
 		user = User(request.form.get('email'))
 		if user.is_valid():
 			if user.check_pass(request.form.get('password')):
 				session["userid"] = str(user.get("_id"))
-				return redirect(url_for('settings'))
+				return redirect(url_for('documents'))
 			else:
 				flash("Your password was incorrect.")
 		else:
@@ -33,7 +33,7 @@ def index():
 @app.route('/signup', methods=['POST', 'GET'])
 def signup():
 	if session.get('userid'):
-		return redirect(url_for('settings'))
+		return redirect(url_for('documents'))
 	if request.method == "POST":
 		username = session.pop("username")
 		password = session.pop("password")
@@ -48,15 +48,15 @@ def signup():
 			return redirect(url_for('logout'))
 		userid = create_user(username,hash_password(password),name=name,snapchat=snapchat,token=cust,address=address)
 		session["userid"] = userid
-		return redirect(url_for('settings'))
+		return redirect(url_for('documents'))
 	return render_template('signup.html',email=session["username"],smarty_key=os.environ['smarty_key'])
 
-@app.route('/settings', methods=['POST', 'GET'])
-def settings():
+@app.route('/documents', methods=['POST', 'GET'])
+def documents():
 	if session.get('userid') == None:
 		return redirect(url_for('index'))
 	user = User(None,userid=session["userid"])
-	return render_template('settings.html',user=user,letters=letters.find({"from_address.email": user.get("username")}))
+	return render_template('documents.html',user=user,letters=letters.find({"from_address.email": user.get("username")}))
 
 @app.route('/logout')
 def logout():
@@ -68,7 +68,7 @@ def logout():
 def incoming_letter_email():
 	body = request.form.get('text')
 	regexp = re.findall(r"\w+@\w+.\w+",request.form.get('from'))
-	
+
 	if len(regexp) > 0:
 		username = regexp[len(regexp)-1]
 	else:

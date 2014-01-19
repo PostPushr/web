@@ -110,8 +110,6 @@ def send_letter(user,to_name,to_address,body):
 		message["to"]["address"] = str(to_address_coded).replace(",","<br>")
 		message["_from"]["address"] = str(from_address_coded).replace(",","<br>")
 
-		stripe.Charge.create(amount=150,currency="usd",customer=user.get("token"))
-
 		obj_loc = save(render_text(message), user, to_address, from_address)
 		return obj_loc
 	else:
