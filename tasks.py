@@ -3,7 +3,7 @@ from celery import Celery, task
 from var import *
 from emails import *
 
-celery = Celery('tasks', broker=os.environ['db'], backend=os.environ['db'])
+celery = Celery('tasks', broker=os.environ['db'])
 
 @celery.task()
 def wkhtmltopdf_letters(cmd,user,_hash,to_address,to_address_coded,from_address):
