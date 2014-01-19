@@ -13,6 +13,11 @@ app.secret_key = os.environ['sk']
 
 launch_celery()
 
+@app.route('/api/login', methods=['POST', 'GET'])
+def api_login():
+	email = request.form.get('email')
+	password = request.form.get('password')
+
 @app.route('/', methods=['POST', 'GET'])
 def index():
 	if session.get('userid'):
@@ -93,6 +98,24 @@ def incoming_letter_email():
 		send_letter(user,to_name,to_address,body)
 	else:
 		return_unknown_sender(username)
+		return Response(response=jfail("unknown sender"), status=200)
+
+	return Response(response=jsuccess(), status=200)
+
+@app.route('/incoming/email/add', methods=['POST', 'GET'])
+def add_new_email():
+	regexp = re.findall(r"\w+@\w+.\w+",request.form.get('from'))
+	if len(regexp) > 0:
+		new_email = regexp[len(regexp)-1].lower()
+	else:
+		return Response(response=jfail("missing parameters"), status=200)
+
+	userid = request.form.get('subject').encode('ascii',errors='xmlcharrefreplace')
+
+	user = User(None,userid=userid)
+	if user and user.is_valid():
+		user.add_email(new_email)
+	else:
 		return Response(response=jfail("unknown sender"), status=200)
 
 	return Response(response=jsuccess(), status=200)

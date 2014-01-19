@@ -1,8 +1,14 @@
 {% extends 'layout.html' %}
 {% block body %}
 <div style="text-align:center;">
-{% for l in letters %}
-<span class="letter"> <a class="btn btn-primary" href="{{url_for('get_letter',_hash=l.jobid)}}">Letter to {{l.job.to.name|ucfirst}} on {{l.job.date_created|dt}} [{{l.job.status}} - ${{'%0.2f' % ((l.job.price|float)*1.75)}}]</a></span><br /><br />
-{% endfor %}
+	<p>Send an email to new@add.postpushr.com with the subject line <code>{{user.get('_id')}}</code> to add that email to your account.</p>
+	<br /><br /><br />
+	{% if letters.count > 0 %}
+	{% for l in letters %}
+	<span class="letter"> <a class="btn btn-primary" href="{{url_for('get_letter',_hash=l.jobid)}}">Letter to {{l.job.to.name|ucfirst}} on {{l.job.date_created|dt}} [{{l.job.status}} - ${{'%0.2f' % ((l.job.price|float)*1.75)}}]</a></span><br /><br />
+	{% endfor %}
+	{% else %}
+	<p>You haven't sent any documents yet.</p>
+	{% endif %}
 </div>
 {% endblock %}
