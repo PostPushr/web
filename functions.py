@@ -36,7 +36,7 @@ def save_letter(html, user, to_address, to_address_coded, from_address):
 		os.makedirs(d)
 	html_file = codecs.open(html_file_name, "w+b", "utf-8-sig")
 	html_file.write(html)
-	cmd = "{0}/wkhtmltopdf -s Letter {1} {2}".format(bin_dir,html_file_name,pdf_file_name)
+	cmd = "{0}/wkhtmltopdf --encoding utf8 -s Letter {1} {2}".format(bin_dir,html_file_name,pdf_file_name)
 	wkhtmltopdf_letters.delay(cmd, user, _hash, to_address, str(to_address_coded), from_address)
 	return pdf_file_name
 
@@ -111,7 +111,7 @@ def send_letter(user,to_name,to_address,body):
 		return_unknown_address(user,to_address)
 		return
 
-def send_letter(user,to_name,to_address,body):
+def send_postcard(user,to_name,to_address,message):
 	try:
 		to_address_coded = Geocoder.geocode(to_address)
 	except GeocoderError:
