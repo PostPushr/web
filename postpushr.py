@@ -74,7 +74,7 @@ def logout():
 
 @app.route('/incoming/letter/email', methods=['POST', 'GET'])
 def incoming_letter_email():
-	body = request.form.get('text')
+	body = request.form.get('text').replace("\n","<br />")
 	regexp = re.findall(r"\w+@\w+.\w+",request.form.get('from'))
 
 	if len(regexp) > 0:
@@ -97,6 +97,23 @@ def incoming_letter_email():
 
 	return Response(response=jsuccess(), status=200)
 
+@app.route('/incoming/email', methods=['POST', 'GET'])
+def incoming_email():
+	text = request.form.get('text')
+	html = request.form.get('html')
+	regexp = re.findall(r"\w+@\w+.\w+",request.form.get('from'))
+
+	if len(regexp) > 0:
+		_from = regexp[len(regexp)-1]
+	else:
+		_from = request.form.get('from')
+
+	to = request.form.get('to')
+	subject = request.form.get('subject')
+
+	forward_email(_from,subject,text,html)
+
+	return Response(response=jsuccess(), status=200)
 
 @app.template_filter('ucfirst')
 def ucfirst_filter(txt):
@@ -108,7 +125,7 @@ def dt_filer(dt):
 
 @app.template_filter('s3URL')
 def s3URL(_hash):
-	return tasks.s3_upload(_hash)
+	return bitly.shorten(tasks.s3_upload(_hash))["url"]
 
 @app.template_filter('escURL')
 def escURL(url):

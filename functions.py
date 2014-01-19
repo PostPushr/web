@@ -1,7 +1,7 @@
 from jinja2 import Template, Environment, FileSystemLoader
 import requests, hashlib, os, subprocess, json
 import lob, pymongo, stripe, datetime, re, boto
-from pygeocoder import Geocoder
+from pygeocoder import Geocoder, GeocoderError
 from tasks import wkhtmltopdf_letters, s3_upload
 from var import *
 from emails import *
@@ -76,7 +76,11 @@ def ucfirst(txt):
 	return ' '.join([x[:1].upper()+x[1:].lower() for x in txt.split(' ')])
 
 def send_letter(user,to_name,to_address,body):
-	to_address_coded = Geocoder.geocode(to_address)
+	try:
+		to_address_coded = Geocoder.geocode(to_address)
+	except GeocoderError:
+		return_unknown_address(user,to_address)
+		return
 
 	if to_address_coded.valid_address:
 
@@ -98,4 +102,5 @@ def send_letter(user,to_name,to_address,body):
 		return obj_loc
 	else:
 		return_unknown_address(user,to_address)
+		return
 

@@ -1,4 +1,4 @@
-import os, pymongo, sendgrid, lob, stripe
+import os, pymongo, sendgrid, lob, stripe, bitly_api
 
 bin_dir = os.environ['bin_dir']
 lob.api_key = os.environ['lob_api_key']
@@ -9,3 +9,4 @@ db = client.postpushr
 users = db.users
 letters = db.letters
 postcards = db.postcards
+bitly = bitly_api.Connection(access_token=os.environ['BITLY_ACCESS_TOKEN'])
