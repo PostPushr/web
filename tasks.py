@@ -22,7 +22,7 @@ def wkhtmltopdf_letters(cmd,user,_hash,to_address,to_address_coded,from_address)
 	return job
 
 @celery.task()
-def wkhtmltopdf_postcards(cmd,user,_hash,to_address,to_address_coded,from_address):
+def wkhtmltopdf_postcards(cmd,user,_hash,to_address,to_address_coded,from_address,message):
 	d = "static/gen/{0}/".format(_hash)
 	obj_loc = d+"{0}.pdf".format(_hash)
 	s = subprocess.Popen(cmd, shell=True, close_fds=True)
