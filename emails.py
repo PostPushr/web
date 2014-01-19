@@ -15,7 +15,7 @@ def return_unknown_address(user,address):
 	text = "Hello {0},\n\nYou are receiving this email because you tried to send a physical document via PostPushr to an invalid address. PostPushr could not recognize \"{1}\".\n\nPlease try to to send your document again, or visit http://www.{2} for more info.\n\nPostPushr Error Bot".format(user.get("name"),address,os.environ['domain'])
 	html = "Hello {0},<br /><br />You are receiving this email because you tried to send a physical document via PostPushr to an invalid address. PostPushr could not recognize <tt style='display: inline;'>{1}</tt>.<br /><br />Please try to to send your document again, or visit <a href='http://www.{2}'>our site</a> for more info.<br /><br />PostPushr Error Bot".format(user.get("name"),address,os.environ['domain'])
 	message = sendgrid.Message(("errors@{0}".format(os.environ['domain']),"PostPushr Error Bot"), subject, text, html)
-	message.add_to(user.get("username"),user.get("name"))
+	message.add_to(user.get("mailing"),user.get("name"))
 	s.web.send(message)
 
 def return_confirmed_letter(user,address,cost,_hash):
@@ -23,7 +23,7 @@ def return_confirmed_letter(user,address,cost,_hash):
 	text = "Hello {0},\n\nYou are receiving this email because you have sent a physical document via PostPushr. PostPushr has successfully posted your letter to \"{1}\", for a total cost of {2}.\n\nPlease visit http://www.{3} for more info.\n\nPostPushr Confirmation Bot".format(user.get("name"),address,'$%0.2f' % (cost/100),os.environ['domain']+"/letter/"+_hash)
 	html = "Hello {0},<br /><br />You are receiving this email because you have sent a physical document via PostPushr. PostPushr has successfully posted your letter to <tt style=\"display:inline;\">{1}</tt>, for a total cost of {2}.<br /><br />Please visit <a href='http://www.{3}'>our site</a> for more info.<br /><br />PostPushr Confirmation Bot".format(user.get("name"),address,'$%0.2f' % (cost/100),os.environ['domain']+"/letter/"+_hash)
 	message = sendgrid.Message(("confirmations@{0}".format(os.environ['domain']),"PostPushr Confirmation Bot"), subject, text, html)
-	message.add_to(user.get("username"),user.get("name"))
+	message.add_to(user.get("mailing"),user.get("name"))
 	s.web.send(message)
 
 def confirm_email_addition(user,new_email):
@@ -32,6 +32,7 @@ def confirm_email_addition(user,new_email):
 	html = "Hello {0},<br /><br />You are receiving this email because you have added a new email address to your account on PostPushr. PostPushr will now recognize <tt style=\"display:inline;\">{1}</tt> as being associated with your account.<br /><br />PostPushr Confirmation Bot".format(user.get("name"),new_email)
 	message = sendgrid.Message(("confirmations@{0}".format(os.environ['domain']),"PostPushr Confirmation Bot"), subject, text, html)
 	message.add_to(user.get("username"),user.get("name"))
+	message.add_to(new_email,user.get("name"))
 	s.web.send(message)
 
 def forward_email(_from,subject,text,html):

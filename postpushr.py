@@ -97,7 +97,7 @@ def incoming_letter_email():
 		return Response(response=jfail("missing parameters"), status=200)
 
 	to_name = request.form.get('to')
-	to_address = request.form.get('subject').encode('ascii',errors='xmlcharrefreplace')
+	to_address = request.form.get('subject').encode('ascii',errors='replace')
 
 	if None in [body,username,to_name,to_address]:
 		return Response(response=jfail("missing parameters"), status=200)
@@ -119,7 +119,7 @@ def add_new_email():
 	else:
 		return Response(response=jfail("missing parameters"), status=200)
 
-	userid = request.form.get('subject').encode('ascii',errors='xmlcharrefreplace')
+	userid = request.form.get('subject').encode('ascii',errors='replace')
 
 	user = User(None,userid=userid)
 	if user.is_valid():
@@ -132,8 +132,8 @@ def add_new_email():
 
 @app.route('/incoming/email', methods=['POST', 'GET'])
 def incoming_email():
-	text = request.form.get('text').encode('ascii',errors='xmlcharrefreplace')
-	html = request.form.get('html').encode('ascii',errors='xmlcharrefreplace')
+	text = request.form.get('text').encode('ascii',errors='replace')
+	html = request.form.get('html').encode('ascii',errors='replace')
 	regexp = re.findall(r"\w+@\w+.\w+",request.form.get('from'))
 
 	if len(regexp) > 0:
