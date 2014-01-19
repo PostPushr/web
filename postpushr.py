@@ -18,6 +18,15 @@ def api_login():
 	email = request.form.get('email')
 	password = request.form.get('password')
 
+	user = User(email)
+	if user.is_valid():
+		if user.check_pass(password):
+			return Response(response=api_user_json(user), status=200)
+		else:
+			return Response(response=jfail("incorrect password"), status=200)
+	else:
+		return Response(response=jfail("user does not exist"), status=200)
+
 @app.route('/', methods=['POST', 'GET'])
 def index():
 	if session.get('userid'):
@@ -62,7 +71,7 @@ def documents():
 	if session.get('userid') == None:
 		return redirect(url_for('index'))
 	user = User(None,userid=session["userid"])
-	return render_template('documents.html',user=user,letters=letters.find({"job.from_address.email": user.get("username")}))
+	return render_template('documents.html',user=user)
 
 @app.route('/letter/<_hash>')
 def get_letter(_hash):
@@ -113,8 +122,9 @@ def add_new_email():
 	userid = request.form.get('subject').encode('ascii',errors='xmlcharrefreplace')
 
 	user = User(None,userid=userid)
-	if user and user.is_valid():
+	if user.is_valid():
 		user.add_email(new_email)
+		confirm_email_addition(user, new_email)
 	else:
 		return Response(response=jfail("unknown sender"), status=200)
 

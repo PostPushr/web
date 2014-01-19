@@ -111,3 +111,11 @@ def send_letter(user,to_name,to_address,body):
 		return_unknown_address(user,to_address)
 		return
 
+
+def api_user_json(user):
+	postcards = user.get_postcards()
+	postcards_json = []
+	for p in postcards:
+		
+
+
