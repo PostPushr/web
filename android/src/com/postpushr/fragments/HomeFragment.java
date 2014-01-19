@@ -2,7 +2,6 @@ package com.postpushr.fragments;
 
 import android.app.ListFragment;
 import android.content.Context;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,24 +14,23 @@ import com.postpushr.model.Order;
 
 public class HomeFragment extends ListFragment {
 
-	private Account mAccount;
-
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-
-	}
-
-	private class OrderListAdapter extends BaseAdapter {
+	public class OrderListAdapter extends BaseAdapter {
 
 		private final Context mContext;
+		private final Account mAccount;
 
-		public OrderListAdapter(Context context) {
+		public OrderListAdapter(Context context, Account account) {
 			mContext = context;
+			mAccount = account;
 		}
 
 		@Override
 		public int getCount() {
-			return mAccount.getOrders().size();
+			if (mAccount != null) {
+				return mAccount.getOrders().size();
+			} else {
+				return 0;
+			}
 		}
 
 		@Override

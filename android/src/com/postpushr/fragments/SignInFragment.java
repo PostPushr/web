@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.postpushr.R;
+import com.postpushr.model.Account;
 
 public class SignInFragment extends Fragment {
 
@@ -30,13 +31,13 @@ public class SignInFragment extends Fragment {
 		loginButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
-				((SignInListener) getActivity()).onLoginButton();
+				((SignInListener) getActivity()).switchToLoginFragment();
 			}
 		});
 		registerButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
-				((SignInListener) getActivity()).onRegisterButton();
+				((SignInListener) getActivity()).switchToRegisterFragment();
 			}
 		});
 
@@ -44,8 +45,10 @@ public class SignInFragment extends Fragment {
 	}
 
 	public interface SignInListener {
-		public void onLoginButton();
+		public void switchToLoginFragment();
 
-		public void onRegisterButton();
+		public void switchToRegisterFragment();
+
+		public void moveToHomeFragment(Account account);
 	}
 }

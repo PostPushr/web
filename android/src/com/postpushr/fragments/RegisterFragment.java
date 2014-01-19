@@ -11,6 +11,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.postpushr.R;
+import com.postpushr.fragments.SignInFragment.SignInListener;
 import com.stripe.android.Stripe;
 import com.stripe.android.TokenCallback;
 import com.stripe.android.model.Card;
@@ -70,10 +71,10 @@ public class RegisterFragment extends Fragment {
 					stripe.createToken(card, new TokenCallback() {
 						@Override
 						public void onSuccess(Token token) {
-							// Send token to your server
-							Toast.makeText(view.getContext(),
-									"Made it werk. Now make it twerk",
-									Toast.LENGTH_LONG).show();
+							// TODO: Send token to your server
+							// assuming I get a nice confirmation back
+							((SignInListener) getActivity())
+									.moveToHomeFragment(null);
 						}
 
 						@Override
