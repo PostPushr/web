@@ -2,7 +2,9 @@
 {% block body %}
 <div style="text-align:center;">
 	<p>Send an email to new@add.postpushr.com with the subject line <code>{{user.get('_id')}}</code> to add that email to your account.</p>
-	<br /><br /><br />
+	<br />
+	<h2>Letters Sent</h2>
+	<br />
 	{% if user.get_letters().count > 0 %}
 	{% for l in user.get_letters() %}
 	<span class="letter"> <a class="btn btn-primary" href="{{url_for('get_letter',_hash=l.jobid)}}">Letter to {{l.job.to.name|ucfirst}} on {{l.job.date_created|dt}} [${{'%0.2f' % ((l.job.price|float)*1.75)}}]</a></span><br /><br />
