@@ -16,12 +16,12 @@ PostPushr combines physical delivery with the speed and universality of the clou
 
 Picture this: you're attending MHacks and left your significant other back at home. How romantic it would be to send him or her a love letter from amidst the chaos of sleep deprivation and junk food. Alas, it's freezing outside, and no one really knows where the post office is. PostPushr to the rescue!
 
-If that prospect left you in awe, you'll love the second part of this project. With our mobile Android app, you can have your selfie preparing to be shipped half way around the world before you even have time to recondsider that duck face. Your friends no longer have to feel guilty about screenshotting your beautiful face, they can just frame the postcard you send them. Not to mention all the "wish they were here!" greetings you can send your folks back home as you drown in StackOverflow and snack overflows.
+If that prospect left you in awe, you'll love the second part of this project. With our mobile Android app, you can have your selfie preparing to be shipped half way around the world before you even have time to reconsider that duck face. Your friends no longer have to feel guilty about screenshotting your beautiful face, they can just frame the postcard you send them. Not to mention all the "wish they were here!" greetings you can send your folks back home as you drown in StackOverflow and snack overflows.
 
 ###How?
 
-1. Visit www.postpushr.com and register for an account
-2. Send an email to contact_name@letter.postpushr.com, with spaces substituted for underscores
-4. Use a valid address as the subject
-5. Type out your message as the body of the email
-6. Hit send, and take a minute to realize how much you enjoyed usiing PostPushr today
+1. Visit www.postpushr.com and register for an account.
+2. Send an email to contact_name@letter.postpushr.com, with spaces substituted for underscores.
+4. Use a valid address as the subject.
+5. Type out your message as the body of the email.
+6. Hit send, and take a minute to realize how much you enjoyed usiing PostPushr today.

@@ -150,7 +150,7 @@ def logout():
 @app.route('/incoming/letter/email', methods=['POST', 'GET'])
 def incoming_letter_email():
 	body = unicode(request.form.get('text')).encode('ascii','xmlcharrefreplace').replace("\n","<br />")
-	regexp = re.findall(r"\w+@\w+.\w+",request.form.get('from'))
+	regexp = re.findall(r'[\w\.-]+@[\w\.-]+',request.form.get('from'))
 
 	if len(regexp) > 0:
 		username = regexp[len(regexp)-1].lower()
@@ -174,7 +174,7 @@ def incoming_letter_email():
 
 @app.route('/incoming/email/add', methods=['POST', 'GET'])
 def add_new_email():
-	regexp = re.findall(r"\w+@\w+.\w+",request.form.get('from'))
+	regexp = re.findall(r'[\w\.-]+@[\w\.-]+',request.form.get('from'))
 	if len(regexp) > 0:
 		new_email = regexp[len(regexp)-1].lower()
 	else:
@@ -194,7 +194,7 @@ def add_new_email():
 def incoming_email():
 	text = unicode(request.form.get('text')).encode('ascii','xmlcharrefreplace')
 	html = unicode(request.form.get('html')).encode('ascii','xmlcharrefreplace')
-	regexp = re.findall(r"\w+@\w+.\w+",request.form.get('from'))
+	regexp = re.findall(r'[\w\.-]+@[\w\.-]+',request.form.get('from'))
 
 	if len(regexp) > 0:
 		_from = regexp[len(regexp)-1]
