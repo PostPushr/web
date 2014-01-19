@@ -20,7 +20,7 @@ Imagine: you're here at MHacks and left your spouse/partner/significant other ba
 
 1. www.postpushr.com
 2. Register an account.
-3. Opening up a new message, enter the name of your recipient in front of @letter.postpushr.com. For example, if I wanted to send a letter to David, I would email David@letter.postpushr.com. If I wanted to mail to Aneesh Agrawal, I would email Aneesh_Agrawal@letter.postpushr.com.
-4. Type a valid address in the subject line. ex: 305 Memorial Drive, Cambridge, MA 02139
+3. Opening up a new message, enter the name of your recipient in front of @letter.postpushr.com, with underscores substituted for spaces. For example, if I wanted to send a letter to David, I would email David@letter.postpushr.com. If I wanted to mail Aneesh Agrawal, I would email Aneesh_Agrawal@letter.postpushr.com.
+4. Type a valid address in the subject line. ex: 318 Memorial Street, Cambridge, MA 12169
 5. Enter the text of your letter in the email body.
 6. Hit send, and wait for your lucky recipient to get a delightful surprise in the mail!
