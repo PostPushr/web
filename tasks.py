@@ -22,6 +22,22 @@ def wkhtmltopdf_letters(cmd,user,_hash,to_address,to_address_coded,from_address)
 	return job
 
 @celery.task()
+def wkhtmltopdf_postcards(cmd,user,_hash,to_address,to_address_coded,from_address,message):
+	d = "static/gen/{0}/".format(_hash)
+	obj_loc = d+"{0}.pdf".format(_hash)
+	s = subprocess.Popen(cmd, shell=True, close_fds=True)
+	s.wait()
+	file_url = "http://www."+os.environ['domain']+"/"+obj_loc
+	_object = lob.Object.create(name=_hash, file=file_url, setting_id='100', quantity=1)
+	job = lob.Job.create(name=_hash, to=to_address.id, objects=_object.id, from_address=from_address.id, packaging_id='1').to_dict()
+	letters.insert({"jobid": _hash, "job": job})
+	s3_upload.delay(_hash)
+	cost = int(float(job["price"])*1.75*100)
+	stripe.Charge.create(amount=cost,currency="usd",customer=user.get("token"))
+	return_confirmed_letter(user,to_address_coded,cost,_hash)
+	return job
+
+@celery.task()
 def s3_upload(dest_hash, acl='public-read'):
     key_name = "letters/" + dest_hash + "/" + dest_hash + ".pdf"
 

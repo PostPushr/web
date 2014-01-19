@@ -13,6 +13,20 @@ app.secret_key = os.environ['sk']
 
 launch_celery()
 
+@app.route('/api/login', methods=['POST', 'GET'])
+def api_login():
+	email = request.form.get('email')
+	password = request.form.get('password')
+
+	user = User(email)
+	if user.is_valid():
+		if user.check_pass(password):
+			return Response(response=api_user_json(user), status=200)
+		else:
+			return Response(response=jfail("incorrect password"), status=200)
+	else:
+		return Response(response=jfail("user does not exist"), status=200)
+
 @app.route('/', methods=['POST', 'GET'])
 def index():
 	if session.get('userid'):
@@ -26,7 +40,7 @@ def index():
 			else:
 				flash("Your password was incorrect.")
 		else:
-			session["username"] = request.form.get('email')
+			session["username"] = request.form.get('email').lower()
 			session["password"] = request.form.get('password')
 			return redirect(url_for('signup'))
 	return render_template('index.html')
@@ -57,7 +71,7 @@ def documents():
 	if session.get('userid') == None:
 		return redirect(url_for('index'))
 	user = User(None,userid=session["userid"])
-	return render_template('documents.html',user=user,letters=letters.find({"from_address.email": user.get("username")}))
+	return render_template('documents.html',user=user)
 
 @app.route('/letter/<_hash>')
 def get_letter(_hash):
@@ -74,16 +88,18 @@ def logout():
 
 @app.route('/incoming/letter/email', methods=['POST', 'GET'])
 def incoming_letter_email():
-	body = request.form.get('text').replace("\n","<br />")
+	charset = request.form.get('charsets')["text"]
+	body = request.form.get('text').decode(charset).encode("utf-8").replace("\n","<br />")
 	regexp = re.findall(r"\w+@\w+.\w+",request.form.get('from'))
 
 	if len(regexp) > 0:
-		username = regexp[len(regexp)-1]
+		username = regexp[len(regexp)-1].lower()
 	else:
 		return Response(response=jfail("missing parameters"), status=200)
 
 	to_name = request.form.get('to')
-	to_address = request.form.get('subject')
+	charset = request.form.get('charsets')["subject"]
+	to_address = request.form.get('subject').decode(charset).encode("utf-8")
 
 	if None in [body,username,to_name,to_address]:
 		return Response(response=jfail("missing parameters"), status=200)
@@ -97,10 +113,32 @@ def incoming_letter_email():
 
 	return Response(response=jsuccess(), status=200)
 
+@app.route('/incoming/email/add', methods=['POST', 'GET'])
+def add_new_email():
+	regexp = re.findall(r"\w+@\w+.\w+",request.form.get('from'))
+	if len(regexp) > 0:
+		new_email = regexp[len(regexp)-1].lower()
+	else:
+		return Response(response=jfail("missing parameters"), status=200)
+
+	charset = request.form.get('charsets')["subject"]
+	userid = request.form.get('subject').decode(charset).encode("utf-8")
+
+	user = User(None,userid=userid)
+	if user.is_valid():
+		user.add_email(new_email)
+		confirm_email_addition(user, new_email)
+	else:
+		return Response(response=jfail("unknown sender"), status=200)
+
+	return Response(response=jsuccess(), status=200)
+
 @app.route('/incoming/email', methods=['POST', 'GET'])
 def incoming_email():
-	text = request.form.get('text')
-	html = request.form.get('html')
+	charset = request.form.get('charsets')["text"]
+	text = request.form.get('text').decode(charset).encode("utf-8")
+	charset = request.form.get('charsets')["html"]
+	html = request.form.get('html').decode(charset).encode("utf-8")
 	regexp = re.findall(r"\w+@\w+.\w+",request.form.get('from'))
 
 	if len(regexp) > 0:
@@ -109,7 +147,9 @@ def incoming_email():
 		_from = request.form.get('from')
 
 	to = request.form.get('to')
-	subject = request.form.get('subject')
+
+	charset = request.form.get('charsets')["subject"]
+	subject = request.form.get('subject').decode(charset).encode("utf-8")
 
 	forward_email(_from,subject,text,html)
 

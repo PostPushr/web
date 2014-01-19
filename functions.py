@@ -1,5 +1,5 @@
 from jinja2 import Template, Environment, FileSystemLoader
-import requests, hashlib, os, subprocess, json
+import requests, hashlib, os, subprocess, json, time, codecs
 import lob, pymongo, stripe, datetime, re, boto
 from pygeocoder import Geocoder, GeocoderError
 from tasks import wkhtmltopdf_letters, s3_upload
@@ -8,8 +8,11 @@ from emails import *
 
 
 def launch_celery():
-    p = subprocess.Popen("celery worker -q -A tasks > /dev/null 2>&1 &", shell=True, close_fds=True)
-    p.wait()
+	if os.environ.get('dev') == "True":
+		p = subprocess.Popen("celery worker -q -A tasks &", shell=True, close_fds=True)
+	else:
+		p = subprocess.Popen("celery worker -q -A tasks > /dev/null 2>&1 &", shell=True, close_fds=True)
+	p.wait()
 
 def create_stripe_cust(token,email):
 	try:
@@ -24,16 +27,16 @@ def jsuccess():
 def jfail(reason):
 	return json.dumps({"status": "error","error": reason})
 
-def save(html, user, to_address, to_address_coded, from_address):
+def save_letter(html, user, to_address, to_address_coded, from_address):
 	_hash = hashlib.md5(user.get("username")+str(datetime.datetime.now())).hexdigest()
 	d = "static/gen/{0}/".format(_hash)
 	pdf_file_name = d+"{0}.pdf".format(_hash)
 	html_file_name = d+"{0}.html".format(_hash)
 	if not os.path.exists(d):
 		os.makedirs(d)
-	html_file = open(html_file_name, "w+b")
+	html_file = codecs.open(html_file_name, "w+b", "utf-8-sig")
 	html_file.write(html)
-	cmd = "{0}/wkhtmltopdf -s Letter {1} {2}".format(bin_dir,html_file_name,pdf_file_name)
+	cmd = "{0}/wkhtmltopdf --encoding utf8 -s Letter {1} {2}".format(bin_dir,html_file_name,pdf_file_name)
 	wkhtmltopdf_letters.delay(cmd, user, _hash, to_address, str(to_address_coded), from_address)
 	return pdf_file_name
 
@@ -59,7 +62,7 @@ def create_user(username, hashed_password, **kwargs):
 	kwargs["username"] = username
 	kwargs["password"] = hashed_password
 	users.insert(kwargs)
-	return str(users.find_one({"username": username}))
+	return str(users.find_one({"username": username})["_id"])
 
 def sha1(text):
 	m = hashlib.sha1()
@@ -88,19 +91,64 @@ def send_letter(user,to_name,to_address,body):
 		to_name = re.sub("@\w+."+os.environ["domain"],"",to_name)
 		to_name = ucfirst(to_name)
 
-		message = {"to": {"prefix": "Dear", "name": to_name}, "_from": {"prefix": "Sincerely,", "name": user.get("name")}, "body": body}
+		message = {"to": {"prefix": "", "name": to_name}, "_from": {"prefix": "", "name": user.get("name")}, "body": body}
 
 		to_address = create_address_from_geocode(message["to"]["name"], to_address_coded)
+		try:
+			from_address_coded = Geocoder.geocode(user.get('address'))
+		except GeocoderError:
+			time.sleep(0.5)
+			from_address_coded = Geocoder.geocode(user.get('address'))
 
-		from_address_coded = Geocoder.geocode(user.get('address'))
 		from_address = create_address_from_geocode(message["_from"]["name"], from_address_coded, email=user.get('username'))
 
 		message["to"]["address"] = str(to_address_coded).replace(",","<br>")
 		message["_from"]["address"] = str(from_address_coded).replace(",","<br>")
 
-		obj_loc = save(render_text(message), user, to_address, to_address_coded, from_address)
+		obj_loc = save_letter(render_text(message), user, to_address, to_address_coded, from_address)
 		return obj_loc
 	else:
 		return_unknown_address(user,to_address)
 		return
+
+def send_postcard(user,to_name,to_address,message):
+	try:
+		to_address_coded = Geocoder.geocode(to_address)
+	except GeocoderError:
+		return jfail("invalid address")
+
+	if to_address_coded.valid_address:
+
+		message = {"to": {"prefix": "", "name": to_name}, "_from": {"prefix": "", "name": user.get("name")}, "message": message}
+
+		to_address = create_address_from_geocode(message["to"]["name"], to_address_coded)
+		try:
+			from_address_coded = Geocoder.geocode(user.get('address'))
+		except GeocoderError:
+			time.sleep(0.5)
+			from_address_coded = Geocoder.geocode(user.get('address'))
+
+		from_address = create_address_from_geocode(message["_from"]["name"], from_address_coded, email=user.get('username'))
+
+		message["to"]["address"] = str(to_address_coded).replace(",","<br>")
+		message["_from"]["address"] = str(from_address_coded).replace(",","<br>")
+
+		obj_loc = save_letter(render_text(message), user, to_address, to_address_coded, from_address)
+		return obj_loc
+	else:
+		return jfail("invalid address")
+		return
+
+
+def api_user_json(user):
+	postcards = user.get_postcards()
+	postcards_json = []
+	for p in postcards:
+		p_obj = {}
+		p_obj["date"] = arrow.get(parser.parse(p["job"]["date_created"])).format("MMMM D, YYYY")
+		p_obj["picture"] = p["picture"]
+		p_obj["price"] = float(p["job"]["price"])*1.75
+		p_obj["name"] = ucfirst(p["job"]["to"]["name"])
+		p_obj["message"] = p["job"]["message"]
+		p_obj["address"] = ucfirst(p["job"]["to"]["address_line1"]) + ", " + ucfirst(p["job"]["to"]["address_city"]) + ", " + p["job"]["to"]["address_state"] + p["job"]["to"]["address_zip"]
 
