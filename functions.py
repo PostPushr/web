@@ -1,5 +1,5 @@
 from jinja2 import Template, Environment, FileSystemLoader
-import requests, hashlib, os, subprocess, json
+import requests, hashlib, os, subprocess, json, time
 import lob, pymongo, stripe, datetime, re, boto
 from pygeocoder import Geocoder, GeocoderError
 from tasks import wkhtmltopdf_letters, s3_upload
@@ -91,8 +91,12 @@ def send_letter(user,to_name,to_address,body):
 		message = {"to": {"prefix": "", "name": to_name}, "_from": {"prefix": "", "name": user.get("name")}, "body": body}
 
 		to_address = create_address_from_geocode(message["to"]["name"], to_address_coded)
+		try:
+			from_address_coded = Geocoder.geocode(user.get('address'))
+		except GeocoderError:
+			time.sleep(0.5)
+			from_address_coded = Geocoder.geocode(user.get('address'))
 
-		from_address_coded = Geocoder.geocode(user.get('address'))
 		from_address = create_address_from_geocode(message["_from"]["name"], from_address_coded, email=user.get('username'))
 
 		message["to"]["address"] = str(to_address_coded).replace(",","<br>")
