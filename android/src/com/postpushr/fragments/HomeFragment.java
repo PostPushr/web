@@ -21,15 +21,7 @@ public class HomeFragment extends ListFragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
 		setHasOptionsMenu(true);
-
-		/*
-		 * @Override public boolean onCreateOptionsMenu(Menu menu) {
-		 * MenuInflater inflater = getMenuInflater();
-		 * inflater.inflate(R.menu.setup_actions, menu); return
-		 * super.onCreateOptionsMenu(menu); }
-		 */
 	}
 
 	@Override

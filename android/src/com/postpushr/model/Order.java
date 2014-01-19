@@ -1,36 +1,33 @@
 package com.postpushr.model;
 
-import java.text.DateFormat;
-
 import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 
 public class Order {
 
-	private final DateFormat mOrderDate;
+	private final String mOrderDate;
 	private final Bitmap mPicture;
-	private final Recipient[] mRecipients;
+	private final Recipient mRecipient;
 	private final float mPrice;
 
-	public Order(DateFormat orderDate, Bitmap picture, Recipient[] recipients,
-			float price) {
+	public Order(String orderDate, Bitmap picture, Recipient recipient, float price) {
 		mOrderDate = orderDate;
 		mPicture = picture;
-		mRecipients = recipients;
+		mRecipient = recipient;
 		mPrice = price;
 	}
 
 	public String getOrderDateString() {
 		// TODO test this formatting
-		return DateFormat.getDateInstance(DateFormat.LONG).format(mOrderDate);
+		return mOrderDate;
 	}
 
-	public Bitmap getPictureBitmap() {
+	public Bitmap getPicture() {
 		return mPicture;
 	}
 
-	public Recipient[] getRecipients() {
-		return mRecipients;
+	public Recipient getRecipient() {
+		return mRecipient;
 	}
 
 	@SuppressLint("DefaultLocale")

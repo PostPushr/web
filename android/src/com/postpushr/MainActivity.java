@@ -14,6 +14,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.postpushr.fragments.AddPostcardFragment;
+import com.postpushr.fragments.AddPostcardFragment.AccountHolder;
 import com.postpushr.fragments.HomeFragment;
 import com.postpushr.fragments.HomeFragment.PostcardFlowListener;
 import com.postpushr.fragments.LoginFragment;
@@ -21,7 +22,7 @@ import com.postpushr.fragments.RegisterFragment;
 import com.postpushr.fragments.SignInFragment.SignInListener;
 import com.postpushr.model.Account;
 
-public class MainActivity extends Activity implements SignInListener, PostcardFlowListener {
+public class MainActivity extends Activity implements AccountHolder, SignInListener, PostcardFlowListener {
 
 	private Account mAccount;
 
@@ -72,6 +73,7 @@ public class MainActivity extends Activity implements SignInListener, PostcardFl
 		if (resultCode == RESULT_OK) {
 			// Image captured and saved to fileUri specified in the Intent
 			Toast.makeText(this, "Image saved to:\n" + data.getData(), Toast.LENGTH_LONG).show();
+			((AddPostcardFragment) getFragmentManager().findFragmentById(R.id.fragment_container)).setPictureFilename(data.getData());
 			if (requestCode == getPostcardCode()) {
 
 			} else {
@@ -143,4 +145,10 @@ public class MainActivity extends Activity implements SignInListener, PostcardFl
 				.addToBackStack("Replace with AddPostcardFragment").commit();
 
 	}
+
+	@Override
+	public Account getAccount() {
+		return mAccount;
+	}
+
 }
