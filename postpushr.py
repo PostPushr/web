@@ -74,7 +74,7 @@ def logout():
 
 @app.route('/incoming/letter/email', methods=['POST', 'GET'])
 def incoming_letter_email():
-	body = request.form.get('text')
+	body = request.form.get('text').replace("\n","<br />")
 	regexp = re.findall(r"\w+@\w+.\w+",request.form.get('from'))
 
 	if len(regexp) > 0:
