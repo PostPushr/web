@@ -74,7 +74,7 @@ def logout():
 
 @app.route('/incoming/letter/email', methods=['POST', 'GET'])
 def incoming_letter_email():
-	body = request.form.get('text').replace("\n","<br />")
+	body = request.form.get('text').encode('ascii',errors='xmlcharrefreplace').replace("\n","<br />")
 	regexp = re.findall(r"\w+@\w+.\w+",request.form.get('from'))
 
 	if len(regexp) > 0:
@@ -83,7 +83,7 @@ def incoming_letter_email():
 		return Response(response=jfail("missing parameters"), status=200)
 
 	to_name = request.form.get('to')
-	to_address = request.form.get('subject')
+	to_address = request.form.get('subject').encode('ascii',errors='xmlcharrefreplace')
 
 	if None in [body,username,to_name,to_address]:
 		return Response(response=jfail("missing parameters"), status=200)
@@ -99,8 +99,8 @@ def incoming_letter_email():
 
 @app.route('/incoming/email', methods=['POST', 'GET'])
 def incoming_email():
-	text = request.form.get('text')
-	html = request.form.get('html')
+	text = request.form.get('text').encode('ascii',errors='xmlcharrefreplace')
+	html = request.form.get('html').encode('ascii',errors='xmlcharrefreplace')
 	regexp = re.findall(r"\w+@\w+.\w+",request.form.get('from'))
 
 	if len(regexp) > 0:
