@@ -115,7 +115,6 @@ def incoming_email():
 
 	return Response(response=jsuccess(), status=200)
 
-
 @app.template_filter('ucfirst')
 def ucfirst_filter(txt):
 	return ucfirst(txt)
@@ -126,7 +125,7 @@ def dt_filer(dt):
 
 @app.template_filter('s3URL')
 def s3URL(_hash):
-	return tasks.s3_upload(_hash)
+	return bitly.shorten(tasks.s3_upload(_hash))["url"]
 
 @app.template_filter('escURL')
 def escURL(url):
