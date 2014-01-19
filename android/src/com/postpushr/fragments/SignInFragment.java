@@ -1,4 +1,8 @@
-package com.postpushr;
+package com.postpushr.fragments;
+
+import com.postpushr.R;
+import com.postpushr.R.id;
+import com.postpushr.R.layout;
 
 import android.app.Fragment;
 import android.os.Bundle;

@@ -1,21 +1,12 @@
 package com.postpushr;
 
-import java.io.ByteArrayInputStream;
-import java.nio.charset.Charset;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.Security;
-
-import org.apache.http.util.ByteArrayBuffer;
-import org.spongycastle.crypto.digests.SHA1Digest;
-import org.spongycastle.jce.provider.BouncyCastleProvider;
-import org.spongycastle.util.encoders.Hex;
-
 import android.app.Activity;
 import android.os.Bundle;
 
-import com.postpushr.SignInFragment.SignInListener;
+import com.postpushr.fragments.LoginFragment;
+import com.postpushr.fragments.RegisterFragment;
+import com.postpushr.fragments.SignInFragment;
+import com.postpushr.fragments.SignInFragment.SignInListener;
 
 
 public class SignInActivity extends Activity implements SignInListener {

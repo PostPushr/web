@@ -1,4 +1,4 @@
-package com.postpushr;
+package com.postpushr.fragments;
 
 import android.app.Fragment;
 import android.os.Bundle;
@@ -10,6 +10,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.postpushr.R;
+import com.postpushr.R.id;
+import com.postpushr.R.layout;
 import com.stripe.android.Stripe;
 import com.stripe.android.TokenCallback;
 import com.stripe.android.model.Card;
