@@ -1,5 +1,5 @@
 from jinja2 import Template, Environment, FileSystemLoader
-import requests, hashlib, os, subprocess, json, time
+import requests, hashlib, os, subprocess, json, time, codecs
 import lob, pymongo, stripe, datetime, re, boto
 from pygeocoder import Geocoder, GeocoderError
 from tasks import wkhtmltopdf_letters, s3_upload
@@ -27,14 +27,14 @@ def jsuccess():
 def jfail(reason):
 	return json.dumps({"status": "error","error": reason})
 
-def save(html, user, to_address, to_address_coded, from_address):
+def save_letter(html, user, to_address, to_address_coded, from_address):
 	_hash = hashlib.md5(user.get("username")+str(datetime.datetime.now())).hexdigest()
 	d = "static/gen/{0}/".format(_hash)
 	pdf_file_name = d+"{0}.pdf".format(_hash)
 	html_file_name = d+"{0}.html".format(_hash)
 	if not os.path.exists(d):
 		os.makedirs(d)
-	html_file = open(html_file_name, "w+b")
+	html_file = codecs.open(html_file_name, "w+b", "utf-8-sig")
 	html_file.write(html)
 	cmd = "{0}/wkhtmltopdf -s Letter {1} {2}".format(bin_dir,html_file_name,pdf_file_name)
 	wkhtmltopdf_letters.delay(cmd, user, _hash, to_address, str(to_address_coded), from_address)
@@ -105,7 +105,40 @@ def send_letter(user,to_name,to_address,body):
 		message["to"]["address"] = str(to_address_coded).replace(",","<br>")
 		message["_from"]["address"] = str(from_address_coded).replace(",","<br>")
 
-		obj_loc = save(render_text(message), user, to_address, to_address_coded, from_address)
+		obj_loc = save_letter(render_text(message), user, to_address, to_address_coded, from_address)
+		return obj_loc
+	else:
+		return_unknown_address(user,to_address)
+		return
+
+def send_letter(user,to_name,to_address,body):
+	try:
+		to_address_coded = Geocoder.geocode(to_address)
+	except GeocoderError:
+		return_unknown_address(user,to_address)
+		return
+
+	if to_address_coded.valid_address:
+
+		to_name = to_name.replace("_"," ")
+		to_name = re.sub("@\w+."+os.environ["domain"],"",to_name)
+		to_name = ucfirst(to_name)
+
+		message = {"to": {"prefix": "", "name": to_name}, "_from": {"prefix": "", "name": user.get("name")}, "body": body}
+
+		to_address = create_address_from_geocode(message["to"]["name"], to_address_coded)
+		try:
+			from_address_coded = Geocoder.geocode(user.get('address'))
+		except GeocoderError:
+			time.sleep(0.5)
+			from_address_coded = Geocoder.geocode(user.get('address'))
+
+		from_address = create_address_from_geocode(message["_from"]["name"], from_address_coded, email=user.get('username'))
+
+		message["to"]["address"] = str(to_address_coded).replace(",","<br>")
+		message["_from"]["address"] = str(from_address_coded).replace(",","<br>")
+
+		obj_loc = save_letter(render_text(message), user, to_address, to_address_coded, from_address)
 		return obj_loc
 	else:
 		return_unknown_address(user,to_address)

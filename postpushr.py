@@ -88,7 +88,7 @@ def logout():
 
 @app.route('/incoming/letter/email', methods=['POST', 'GET'])
 def incoming_letter_email():
-	body = unicode(request.form.get('text')).decode().replace("\n","<br />")
+	body = unicode(request.form.get('text')).replace("\n","<br />")
 	regexp = re.findall(r"\w+@\w+.\w+",request.form.get('from'))
 
 	if len(regexp) > 0:
@@ -97,7 +97,7 @@ def incoming_letter_email():
 		return Response(response=jfail("missing parameters"), status=200)
 
 	to_name = request.form.get('to')
-	to_address = unicode(request.form.get('subject')).decode()
+	to_address = unicode(request.form.get('subject'))
 
 	if None in [body,username,to_name,to_address]:
 		return Response(response=jfail("missing parameters"), status=200)
@@ -119,7 +119,7 @@ def add_new_email():
 	else:
 		return Response(response=jfail("missing parameters"), status=200)
 
-	userid = unicode(request.form.get('subject')).decode()
+	userid = unicode(request.form.get('subject'))
 
 	user = User(None,userid=userid)
 	if user.is_valid():
@@ -132,8 +132,8 @@ def add_new_email():
 
 @app.route('/incoming/email', methods=['POST', 'GET'])
 def incoming_email():
-	text = unicode(request.form.get('text')).decode()
-	html = unicode(request.form.get('html')).decode()
+	text = unicode(request.form.get('text'))
+	html = unicode(request.form.get('html'))
 	regexp = re.findall(r"\w+@\w+.\w+",request.form.get('from'))
 
 	if len(regexp) > 0:
