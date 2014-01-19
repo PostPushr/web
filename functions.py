@@ -115,8 +115,7 @@ def send_postcard(user,to_name,to_address,message):
 	try:
 		to_address_coded = Geocoder.geocode(to_address)
 	except GeocoderError:
-		return_unknown_address(user,to_address)
-		return
+		return jfail("invalid address")
 
 	if to_address_coded.valid_address:
 
@@ -141,7 +140,7 @@ def send_postcard(user,to_name,to_address,message):
 		obj_loc = save_letter(render_text(message), user, to_address, to_address_coded, from_address)
 		return obj_loc
 	else:
-		return_unknown_address(user,to_address)
+		return jfail("invalid address")
 		return
 
 
