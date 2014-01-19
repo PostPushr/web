@@ -2,7 +2,6 @@
 <resources>
 
     <string name="app_name">PostPushr</string>
-    <string name="action_settings">SEGSEGLHI</string>
     <string name="setup">Setup</string>
     <string name="password">Password</string>
     <string name="password_hint">Enter a password.</string>
@@ -20,4 +19,6 @@
     <string name="address">Return Address</string>
     <string name="address_hint">Enter your return address.</string>
 
+    <string name="order_thumbnail">Thumbnail</string>
+    
 </resources>
