@@ -1,4 +1,4 @@
-package com.postpushr;
+package com.postpushr.fragments;
 
 import android.app.Fragment;
 import android.os.Bundle;
@@ -8,6 +8,8 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.postpushr.R;
+
 public class SignInFragment extends Fragment {
 
 	@Override
@@ -16,11 +18,14 @@ public class SignInFragment extends Fragment {
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
+	public View onCreateView(LayoutInflater inflater, ViewGroup parent,
+			Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_signin, parent, false);
 
-		Button loginButton = (Button) view.findViewById(R.id.signin_login_button);
-		Button registerButton = (Button) view.findViewById(R.id.signin_register_button);
+		Button loginButton = (Button) view
+				.findViewById(R.id.signin_login_button);
+		Button registerButton = (Button) view
+				.findViewById(R.id.signin_register_button);
 
 		loginButton.setOnClickListener(new OnClickListener() {
 			@Override
@@ -32,7 +37,7 @@ public class SignInFragment extends Fragment {
 			@Override
 			public void onClick(View arg0) {
 				((SignInListener) getActivity()).onRegisterButton();
-			}	
+			}
 		});
 
 		return view;
@@ -40,6 +45,7 @@ public class SignInFragment extends Fragment {
 
 	public interface SignInListener {
 		public void onLoginButton();
+
 		public void onRegisterButton();
 	}
 }

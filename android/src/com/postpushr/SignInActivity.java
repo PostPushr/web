@@ -1,11 +1,13 @@
 package com.postpushr;
 
-import com.postpushr.SignInFragment.SignInListener;
-
 import android.app.Activity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
+
+import com.postpushr.fragments.LoginFragment;
+import com.postpushr.fragments.RegisterFragment;
+import com.postpushr.fragments.SignInFragment;
+import com.postpushr.fragments.SignInFragment.SignInListener;
+
 
 public class SignInActivity extends Activity implements SignInListener {
 
@@ -14,7 +16,6 @@ public class SignInActivity extends Activity implements SignInListener {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_signin);		
 		getFragmentManager().beginTransaction().add(R.id.signin_fragment_container, new SignInFragment()).commit();
-
 	}
 
 	@Override
@@ -27,9 +28,11 @@ public class SignInActivity extends Activity implements SignInListener {
 		getFragmentManager().beginTransaction().replace(R.id.signin_fragment_container, new RegisterFragment()).addToBackStack("Replace with RegisterFragment").commit();
 	}
 
-	
-	
-	
+	private String hashPassword(String password) {
+		return Util.Sha1Hash(Util.Sha1Hash(password) + Util.Sha1Hash(Secrets.getSalt()));
+	}
+
+
 	/*@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();

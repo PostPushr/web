@@ -6,35 +6,35 @@
     android:padding="@dimen/padding" >
 
     <TextView
-        android:id="@+id/email_textview"
+        android:id="@+id/login_email_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/email"
         android:textIsSelectable="false" />
 
     <EditText
-        android:id="@+id/email_edittext"
+        android:id="@+id/login_email_edittext"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/email_hint"
         android:inputType="textEmailAddress" />
 
     <TextView
-        android:id="@+id/password_textview"
+        android:id="@+id/login_password_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/password"
         android:textIsSelectable="false" />
 
     <EditText
-        android:id="@+id/password_edittext"
+        android:id="@+id/login_password_edittext"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/password_hint"
         android:inputType="text|textPassword" />
 
     <Button
-        android:id="@+id/setup_submit_button"
+        android:id="@+id/login_submit_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Log In" />
