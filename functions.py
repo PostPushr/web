@@ -116,6 +116,11 @@ def api_user_json(user):
 	postcards = user.get_postcards()
 	postcards_json = []
 	for p in postcards:
-		
-
+		p_obj = {}
+		p_obj["date"] = arrow.get(parser.parse(p["job"]["date_created"])).format("MMMM D, YYYY")
+		p_obj["picture"] = p["picture"]
+		p_obj["price"] = float(p["job"]["price"])*1.75
+		p_obj["name"] = ucfirst(p["job"]["to"]["name"])
+		p_obj["message"] = p["job"]["message"]
+		p_obj["address"] = ucfirst(p["job"]["to"]["address_line1"]) + ", " + ucfirst(p["job"]["to"]["address_city"]) + ", " + p["job"]["to"]["address_state"] + p["job"]["to"]["address_zip"]
 
