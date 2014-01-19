@@ -14,8 +14,8 @@ public class Util {
 	static {
 		Security.insertProviderAt(new BouncyCastleProvider(), 1);
 	}
-	
-	public static String Sha1Hash(String input) {
+
+	private static String Sha1Hash(String input) {
 		byte[] inputByteArray = input.getBytes(Charset.forName("UTF-8"));
 		MessageDigest Sha1Hasher = null;
 		try {
@@ -28,5 +28,9 @@ public class Util {
 		Sha1Hasher.update(inputByteArray);
 		return new String(Hex.encode(Sha1Hasher.digest()));
 	}
-	
+
+	public static String hashAndSaltPassword(String password) {
+		return Util.Sha1Hash(Util.Sha1Hash(password) + Util.Sha1Hash(Secrets.getSalt()));
+	}
+
 }

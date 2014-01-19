@@ -2,7 +2,11 @@ package com.postpushr.fragments;
 
 import android.app.ListFragment;
 import android.content.Context;
+import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -13,6 +17,36 @@ import com.postpushr.model.Account;
 import com.postpushr.model.Order;
 
 public class HomeFragment extends ListFragment {
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+
+		setHasOptionsMenu(true);
+
+		/*
+		 * @Override public boolean onCreateOptionsMenu(Menu menu) {
+		 * MenuInflater inflater = getMenuInflater();
+		 * inflater.inflate(R.menu.setup_actions, menu); return
+		 * super.onCreateOptionsMenu(menu); }
+		 */
+	}
+
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		inflater.inflate(R.menu.home_actionbar, menu);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case (R.id.home_actionbar_add_button):
+			((PostcardFlowListener) getActivity()).switchToAddPostcardFragment();
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
+	}
 
 	public class OrderListAdapter extends BaseAdapter {
 
@@ -26,7 +60,7 @@ public class HomeFragment extends ListFragment {
 
 		@Override
 		public int getCount() {
-			if (mAccount != null) {
+			if (mAccount.getOrders() != null) {
 				return mAccount.getOrders().size();
 			} else {
 				return 0;
@@ -48,16 +82,25 @@ public class HomeFragment extends ListFragment {
 		public View getView(int position, View view, ViewGroup parent) {
 
 			if (null == view) {
-				LayoutInflater layoutInflater = (LayoutInflater) mContext
-						.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				LayoutInflater layoutInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				view = layoutInflater.inflate(R.layout.order_row, parent);
 			}
 
-			TextView orderName = (TextView) view
-					.findViewById(R.id.order_row_date_textview);
+			TextView orderName = (TextView) view.findViewById(R.id.order_row_date_textview);
 			orderName.setText(((Order) getItem(position)).getOrderDateString());
 
 			return null;
 		}
+	}
+
+	public interface PostcardFlowListener {
+		public void switchToAddPostcardFragment();
+
+		public void executePostcardCameraIntent();
+
+		public int getPostcardCode();
+
+		public int getSelfieCode();
+
 	}
 }
