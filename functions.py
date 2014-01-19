@@ -59,7 +59,7 @@ def create_user(username, hashed_password, **kwargs):
 	kwargs["username"] = username
 	kwargs["password"] = hashed_password
 	users.insert(kwargs)
-	return str(users.find_one({"username": username}))
+	return str(users.find_one({"username": username})["_id"])
 
 def sha1(text):
 	m = hashlib.sha1()
