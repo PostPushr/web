@@ -5,7 +5,7 @@ from var import *
 celery = Celery('tasks', broker=os.environ['db'])
 
 @celery.task()
-def wkhtmltopdf_letters(cmd,user,_hash,to_address,from_address):
+def wkhtmltopdf_letters(cmd,user,_hash,to_address,to_address_coded,from_address):
 	d = "static/gen/{0}/".format(_hash)
 	obj_loc = d+"{0}.pdf".format(_hash)
 	s = subprocess.Popen(cmd, shell=True, close_fds=True)
@@ -15,7 +15,9 @@ def wkhtmltopdf_letters(cmd,user,_hash,to_address,from_address):
 	job = lob.Job.create(name=_hash, to=to_address.id, objects=_object.id, from_address=from_address.id, packaging_id='1').to_dict()
 	letters.insert({"jobid": _hash, "job": job})
 	s3_upload.delay(_hash)
-	stripe.Charge.create(amount=float(job["price"])*1.75,currency="usd",customer=user.get("token"))
+	cost = float(job["price"])*1.75
+	stripe.Charge.create(amount=cost,currency="usd",customer=user.get("token"))
+	return_confirmed_letter(user,to_address_coded,cost,_hash)
 	return job
 
 @celery.task()

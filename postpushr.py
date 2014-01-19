@@ -58,6 +58,13 @@ def documents():
 	user = User(None,userid=session["userid"])
 	return render_template('documents.html',user=user,letters=letters.find({"from_address.email": user.get("username")}))
 
+@app.route('/document/<_hash>')
+def get_document(_hash):
+	if session.get('userid') == None:
+		return redirect(url_for('index'))
+	user = User(None,userid=session["userid"])
+	return render_template('documents.html',user=user,letters=letters.find({"from_address.email": user.get("username")}))
+
 @app.route('/logout')
 def logout():
 	session["userid"] = None
