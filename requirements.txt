@@ -6,6 +6,7 @@ address==0.1.1
 amqp==1.4.1
 anyjson==0.3.3
 billiard==3.3.0.14
+boto==2.23.0
 celery==3.1.8
 distribute==0.6.34
 gunicorn==18.0
@@ -14,8 +15,10 @@ kombu==3.0.10
 lob-python==1.0
 pygeocoder==1.2.2
 pymongo==2.6.3
+python-dateutil==2.2
 pytz==2013.9
 requests==2.2.0
 sendgrid==0.1.4
+six==1.5.2
 stripe==1.11.0
 wsgiref==0.1.2

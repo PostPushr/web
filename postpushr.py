@@ -5,9 +5,12 @@ from functions import *
 import tests
 from User import User
 from bson.objectid import ObjectId
+from dateutil import parser
 
 app = Flask(__name__)
 app.secret_key = os.environ['sk']
+
+launch_celery()
 
 @app.route('/', methods=['POST', 'GET'])
 def index():
@@ -52,8 +55,8 @@ def signup():
 def settings():
 	if session.get('userid') == None:
 		return redirect(url_for('index'))
-	user = User(session["userid"])
-	return render_template('settings.html',user=user)
+	user = User(None,userid=session["userid"])
+	return render_template('settings.html',user=user,letters=letters.find({"from_address.email": user.get("username")}))
 
 @app.route('/logout')
 def logout():
@@ -64,7 +67,13 @@ def logout():
 @app.route('/incoming/letter/email', methods=['POST', 'GET'])
 def incoming_letter_email():
 	body = request.form.get('text')
-	username = request.form.get('from')
+	regexp = re.findall(r"\w+@\w+.\w+",request.form.get('from'))
+	
+	if len(regexp) > 0:
+		username = regexp[len(regexp)-1]
+	else:
+		return Response(response=jfail("missing parameters"), status=200)
+
 	to_name = request.form.get('to')
 	to_address = request.form.get('subject')
 
@@ -81,8 +90,16 @@ def incoming_letter_email():
 	return Response(response=jsuccess(), status=200)
 
 
+@app.template_filter('ucfirst')
+def ucfirst_filter(txt):
+	return ucfirst(txt)
+
+@app.template_filter('dt')
+def dt_filer(dt):
+	return parser.parse(dt).strftime("%x")
+
 if __name__ == '__main__':
 	if os.environ.get('PORT'):
-		app.run(host='0.0.0.0',port=int(os.environ.get('PORT')),debug=False)
+		app.run(host='0.0.0.0',port=int(os.environ.get('PORT')),debug=(os.environ.get('dev') == "True"))
 	else:
-		app.run(host='0.0.0.0',port=5000,debug=True)
+		app.run(host='0.0.0.0',port=5000,debug=(os.environ.get('dev') == "True"))

@@ -1,25 +1,14 @@
 from jinja2 import Template, Environment, FileSystemLoader
 import requests, hashlib, os, subprocess, json
-import lob, pymongo, sendgrid, stripe, datetime
+import lob, pymongo, sendgrid, stripe, datetime, re
 from pygeocoder import Geocoder
-from tasks import execute_command
-
-bin_dir = os.environ['bin_dir']
-lob.api_key = os.environ['lob_api_key']
-s = sendgrid.Sendgrid(os.environ['s_user'], os.environ['s_pass'], secure=True)
-stripe.api_key = "sk_test_qnFVxzNRQbpEKusxV5DCa2CI"
-client = pymongo.MongoClient(os.environ['db'])
-db = client.postpushr
-users = db.users
-letters = db.letters
-postcards = db.postcards
+from tasks import wkhtmltopdf_letters
+from var import *
 
 
 def launch_celery():
-    p = subprocess.Popen("./celery.sh &", shell=True, close_fds=True)
+    p = subprocess.Popen("celery worker -q -A tasks > /dev/null 2>&1 &", shell=True, close_fds=True)
     p.wait()
-
-launch_celery()
 
 def create_stripe_cust(token,email):
 	try:
@@ -34,7 +23,8 @@ def jsuccess():
 def jfail(reason):
 	return json.dumps({"status": "error","error": reason})
 
-def save(html,user_id):
+def save(html, user, to_address, from_address):
+	user_id = hashlib.md5(user.get("username")+str(datetime.datetime.now())).hexdigest()
 	d = "static/gen/{0}/".format(user_id)
 	pdf_file_name = d+"{0}.pdf".format(user_id)
 	html_file_name = d+"{0}.html".format(user_id)
@@ -42,8 +32,8 @@ def save(html,user_id):
 		os.makedirs(d)
 	html_file = open(html_file_name, "w+b")
 	html_file.write(html)
-	cmd = "{0}/wkhtmltopdf {1} {2}".format(bin_dir,html_file_name,pdf_file_name)
-	execute_command.delay(cmd)
+	cmd = "{0}/wkhtmltopdf -s Letter {1} {2}".format(bin_dir,html_file_name,pdf_file_name)
+	wkhtmltopdf_letters.delay(cmd,user, pdf_file_name, to_address, from_address)
 	return pdf_file_name
 
 def render_text(message):
@@ -94,8 +84,12 @@ def return_unknown_address(user,address):
 	message.add_to(user.get("username"),user.get("name"))
 	s.web.send(message)
 
-def create_address_from_geocode(name, address_coded):
-	return lob.Address.create(name=name, address_line1=address_coded.street_number+address_coded.route, address_city=address_coded.city, address_state=address_coded.state__short_name, address_country=address_coded.country__short_name, address_zip=address_coded.postal_code)
+def create_address_from_geocode(name, address_coded, email=None):
+	return lob.Address.create(name=name, address_line1=address_coded.street_number+" "+address_coded.route, address_city=address_coded.city, address_state=address_coded.state__short_name, address_country=address_coded.country__short_name, address_zip=address_coded.postal_code, email=email)
+
+
+def ucfirst(txt):
+	return ' '.join([x[:1].upper()+x[1:].lower() for x in txt.split(' ')])
 
 def send_letter(user,to_name,to_address,body):
 	to_address_coded = Geocoder.geocode(to_address)
@@ -103,21 +97,23 @@ def send_letter(user,to_name,to_address,body):
 	if to_address_coded.valid_address:
 
 		to_name = to_name.replace("_"," ")
+		to_name = re.sub("@\w+."+os.environ["domain"],"",to_name)
+		to_name = ucfirst(to_name)
+		
 		message = {"to": {"prefix": "Dear", "name": to_name}, "_from": {"prefix": "Sincerely,", "name": user.get("name")}, "body": body}
 
 		to_address = create_address_from_geocode(message["to"]["name"], to_address_coded)
 
 		from_address_coded = Geocoder.geocode(user.get('address'))
-		from_address = create_address_from_geocode(message["_from"]["name"], from_address_coded)
+		from_address = create_address_from_geocode(message["_from"]["name"], from_address_coded, email=user.get('username'))
 
-		message["to"]["address"] = str(to_address)
-		message["_from"]["address"] = str(from_address)
+		message["to"]["address"] = str(to_address_coded).replace(",","<br>")
+		message["_from"]["address"] = str(from_address_coded).replace(",","<br>")
 
-		obj_loc = save(render_text(message), hashlib.md5(user.get("username")).hexdigest())
-		_object = lob.Object.create(name=hashlib.md5(user.get("username")+str(datetime.datetime.now())).hexdigest(), file="http://www."+os.environ['domain']+"/"+obj_loc, setting_id='100', quantity=1)
-		job = lob.Job.create(name=hashlib.md5(user.get("username")+str(datetime.datetime.now())).hexdigest(), to=to_address.id, objects=_object.id, from_address=from_address.id, packaging_id='1').to_dict()
-		letters.insert(job)
-		return job
+		stripe.Charge.create(amount=150,currency="usd",customer=user.get("token"))
+
+		obj_loc = save(render_text(message), user, to_address, from_address)
+		return obj_loc
 	else:
 		return_unknown_address(user,to_address)
 
