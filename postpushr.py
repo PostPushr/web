@@ -18,6 +18,9 @@ def api_login():
 	email = request.form.get('email')
 	password = request.form.get('password')
 
+	if None in [email,password]:
+		return Response(response=jfail("missing required parameters"), status=200)
+
 	user = User(email)
 	if user.is_valid():
 		if user.check_pass_hash(password):
@@ -29,30 +32,37 @@ def api_login():
 
 @app.route('/api/register', methods=['POST'])
 def api_register():
-	username = request.form.get('email')
+	email = request.form.get('email')
 	password = request.form.get('password')
 	name = request.form.get('name')
 	address = request.form.get('address')
 	token = request.form.get('token')
 
+	if None in [email,password,name,address,token]:
+		return Response(response=jfail("missing required parameters"), status=200)
+
 	if User(email).is_valid():
-		return jfail('username taken')
+		return Response(response=jfail('username taken'), status=200)
 	cust = create_stripe_cust(token,username)
 	if cust == None:
-		return jfail('card was declined')
+		return Response(response=jfail('card was declined'), status=200)
 
 	userid = create_user(username,password,name=name,token=cust,address=address)
+	return Response(response=jsuccess(), status=200)
 
 @app.route('/api/create/callback', methods=['POST'])
 def api_postcard_callback():
 	txid = request.form.get('txid')
 
+	if None in [txid]:
+		return Response(response=jfail("missing required parameters"), status=200)
+
 	job = postcards.find_one({'jobid': txid})
 	if job == None:
-		return json.dumps({"status": "pending"})
+		return Response(response=json.dumps({"status": "pending"}), status=200)
 
 	cost = int(float(job["price"])*1.75*100)
-	return json.dumps({"status": "success", "results": {"price": '$%0.2f' % (float(cost)/100.0), "date": arrow.get(parser.parse(job["date_created"])).format("h:m A MMMM D, YYYY")}}) 
+	return Response(response=json.dumps({"status": "success", "results": {"price": '$%0.2f' % (float(cost)/100.0), "date": arrow.get(parser.parse(job["date_created"])).format("h:m A MMMM D, YYYY")}}), status=200) 
 
 @app.route('/api/create/postcard', methods=['POST'])
 def api_postcard_create():
@@ -62,6 +72,10 @@ def api_postcard_create():
 	message = request.form.get('message')
 	address = request.form.get('address')
 	picture = request.files['picture']
+
+
+	if None in [username,password,name,message,address,picture]:
+		return Response(response=jfail("missing required parameters"), status=200)
 
 	user = User(username)
 	if user.is_valid():
