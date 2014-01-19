@@ -6,7 +6,7 @@
 
     <TextView
         android:id="@+id/recipient_name_textview"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Recipient Name"
         android:textIsSelectable="false" />
@@ -15,12 +15,12 @@
         android:id="@+id/recipient_name_edittext"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint=""
+        android:hint="Enter the recipient's name."
         android:inputType="text|textCapWords" />
 
     <TextView
         android:id="@+id/recipient_address_textview"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Recipient Address"
         android:textIsSelectable="false" />
@@ -29,14 +29,14 @@
         android:id="@+id/recipient_address_edittext"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint=""
+        android:hint="Enter the recipient's address."
         android:inputType="text|textMultiLine" />
 
     <TextView
         android:id="@+id/recipient_message_textview"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Message"
+        android:text="Message to Recipient"
         android:textIsSelectable="false" />
 
     <EditText

@@ -3,21 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="@dimen/padding">
+    android:padding="@dimen/padding" >
 
-    <TextView
-        android:id="@+id/addpostcard_name_textview"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Postcard name"
-        android:textIsSelectable="false" />
-    
-    <EditText
-        android:id="@+id/addpostcard_name_edittext"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-		android:inputType="text" />
-    
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -25,28 +12,69 @@
 
         <Button
             android:id="@+id/addpostcard_takepicture_button"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:text="Take a picture" />
     </LinearLayout>
-
+<!-- 
     <ListView
         android:id="@+id/addpostcard_recipients_listview"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_height="wrap_content" />
 
     <Button
         android:id="@+id/addpostcard_addrecipient_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Add another recipient" />
-    
+        android:text="Add another recipient" /> -->
+        
+        
+    <TextView
+        android:id="@+id/recipient_name_textview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Recipient Name"
+        android:textIsSelectable="false" />
+
+    <EditText
+        android:id="@+id/recipient_name_edittext"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter the recipient's name."
+        android:inputType="text|textCapWords" />
+
+    <TextView
+        android:id="@+id/recipient_address_textview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Recipient Address"
+        android:textIsSelectable="false" />
+
+    <EditText
+        android:id="@+id/recipient_address_edittext"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter the recipient's address."
+        android:inputType="text|textMultiLine" />
+
+    <TextView
+        android:id="@+id/recipient_message_textview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Message to Recipient"
+        android:textIsSelectable="false" />
+
+    <EditText
+        android:id="@+id/recipient_message_edittext"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter your message to the recipient, including any salutations and closings."
+        android:inputType="text|textMultiLine" />
+
     <Button
         android:id="@+id/addpostcard_send_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Send to recipients" />
-    
+
 </LinearLayout>

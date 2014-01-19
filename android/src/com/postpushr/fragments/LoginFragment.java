@@ -37,7 +37,6 @@ import android.widget.Toast;
 
 import com.postpushr.R;
 import com.postpushr.Util;
-import com.postpushr.fragments.AddPostcardFragment.AccountHolder;
 import com.postpushr.fragments.SignInFragment.SignInListener;
 import com.postpushr.model.Account;
 import com.postpushr.model.Order;
@@ -65,14 +64,15 @@ public class LoginFragment extends Fragment {
 
 			final String username = ((EditText) getView().findViewById(R.id.login_email_edittext)).getText().toString();
 			final String password = ((EditText) getView().findViewById(R.id.login_password_edittext)).getText().toString();
+			System.out.println("DEBUGG:" + username + ":" + password);
 			final String hashedSaltedPassword = Util.hashAndSaltPassword(password);
 			try {
 				// TODO: validate the info with the server
 				HttpClient httpclient = new DefaultHttpClient();
 				HttpPost httppost = new HttpPost("http://postpushr.com/api/login");
-				List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(4);
-				nameValuePairs.add(new BasicNameValuePair("username", ((AccountHolder) getActivity()).getAccount().getUsername()));
-				nameValuePairs.add(new BasicNameValuePair("password", ((AccountHolder) getActivity()).getAccount().getHashedSaltedPassword()));
+				List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+				nameValuePairs.add(new BasicNameValuePair("username", username));
+				nameValuePairs.add(new BasicNameValuePair("password", hashedSaltedPassword));
 				httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 
 				HttpResponse response = httpclient.execute(httppost);

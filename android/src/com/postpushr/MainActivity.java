@@ -19,6 +19,7 @@ import com.postpushr.fragments.HomeFragment;
 import com.postpushr.fragments.HomeFragment.PostcardFlowListener;
 import com.postpushr.fragments.LoginFragment;
 import com.postpushr.fragments.RegisterFragment;
+import com.postpushr.fragments.SignInFragment;
 import com.postpushr.fragments.SignInFragment.SignInListener;
 import com.postpushr.model.Account;
 
@@ -27,13 +28,28 @@ public class MainActivity extends Activity implements AccountHolder, SignInListe
 	private Account mAccount;
 
 	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+
+		boolean home = (getFragmentManager().findFragmentById(R.id.fragment_container) instanceof HomeFragment);
+		outState.putBoolean("HOME", home);
+
+		super.onSaveInstanceState(outState);
+	}
+
+	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		mAccount = null;
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		// getFragmentManager().beginTransaction().add(R.id.fragment_container,
 		// new SignInFragment()).commit();
-		moveToHomeFragment(new Account("sdf", "sdf", null));
+
+		if (savedInstanceState != null && savedInstanceState.getBoolean("HOME") == false) {
+			switchToAddPostcardFragment();
+		} else {
+			getFragmentManager().beginTransaction().add(R.id.fragment_container, new SignInFragment()).commit();
+			// moveToHomeFragment(getAccount());
+		}
 	}
 
 	@Override
@@ -72,7 +88,8 @@ public class MainActivity extends Activity implements AccountHolder, SignInListe
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (resultCode == RESULT_OK) {
 			// Image captured and saved to fileUri specified in the Intent
-			Toast.makeText(this, "Image saved to:\n" + data.getData(), Toast.LENGTH_LONG).show();
+			// Toast.makeText(this, "Image saved to:\n" + data.getData(),
+			// Toast.LENGTH_LONG).show();
 			((AddPostcardFragment) getFragmentManager().findFragmentById(R.id.fragment_container)).setPictureFilename(data.getData());
 			if (requestCode == getPostcardCode()) {
 
@@ -148,7 +165,6 @@ public class MainActivity extends Activity implements AccountHolder, SignInListe
 
 	@Override
 	public Account getAccount() {
-		return mAccount;
+		return new Account("zhangd@mit.edu", "8hfybuxm", null);
 	}
-
 }
