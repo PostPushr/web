@@ -1,4 +1,5 @@
 import functions
+from var import *
 from bson.objectid import ObjectId
 
 class User(object):
@@ -32,7 +33,7 @@ class User(object):
 			return functions.users.update({"username": self.username}, {'$push': {'emails': email}}, True)
 
 	def get_letters(self):
-		return letters.find({"job.from_address.email": user.get("username")})
+		return letters.find({"job.from_address.email": self.get("username")})
 
 	def get_postcards(self):
-		return postcards.find({"job.from_address.email": user.get("username")})
+		return postcards.find({"job.from_address.email": self.get("username")})
