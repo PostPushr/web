@@ -28,8 +28,8 @@ public class RegisterFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_register, parent, false);
 
-		Button submitButton = (Button) view.findViewById(R.id.register_submit_button);
-		submitButton.setOnClickListener(new RegisterSubmitListener()); 
+		Button registerSubmitButton = (Button) view.findViewById(R.id.register_submit_button);
+		registerSubmitButton.setOnClickListener(new RegisterSubmitListener()); 
 
 		return view;
 	}
@@ -50,7 +50,7 @@ public class RegisterFragment extends Fragment {
 
 				Stripe stripe;
 				try {
-					stripe = new Stripe(Util.getStripeKey());
+					stripe = new Stripe("pk_test_bRZoGvGajV5TeFq28CmFyxYa");
 					stripe.createToken(
 							card,
 							new TokenCallback() {
