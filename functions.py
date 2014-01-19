@@ -3,7 +3,7 @@ from werkzeug import secure_filename
 import requests, hashlib, os, subprocess, json, time, codecs
 import lob, pymongo, stripe, datetime, re, boto
 from pygeocoder import Geocoder, GeocoderError
-from tasks import wkhtmltopdf_letters, s3_upload, wkhtmltopdf_postcards, s3_upload_image
+from tasks import wkhtmltopdf_letters, s3_upload, wkhtmltopdf_postcards
 from var import *
 from emails import *
 
@@ -25,6 +25,9 @@ def create_stripe_cust(token,email):
 def jsuccess():
 	return json.dumps({"status": "success"})
 
+def jsuccess_with_txid(txid):
+	return json.dumps({"status": "success", "txid": txid})
+
 def jfail(reason):
 	return json.dumps({"status": "error","error": reason})
 
@@ -41,18 +44,10 @@ def save_letter(html, user, to_address, to_address_coded, from_address):
 	wkhtmltopdf_letters.delay(cmd, user, _hash, to_address, str(to_address_coded), from_address)
 	return pdf_file_name
 
-def save_postcard(html, user, to_address, to_address_coded, from_address):
-	_hash = hashlib.md5(user.get("username")+str(datetime.datetime.now())).hexdigest()
-	d = "static/gen/{0}/".format(_hash)
-	pdf_file_name = d+"{0}.pdf".format(_hash)
-	html_file_name = d+"{0}.html".format(_hash)
-	if not os.path.exists(d):
-		os.makedirs(d)
-	html_file = codecs.open(html_file_name, "w+b", "utf-8-sig")
-	html_file.write(html)
-	cmd = "{0}/wkhtmltopdf --encoding utf8 -s Letter {1} {2}".format(bin_dir,html_file_name,pdf_file_name)
-	wkhtmltopdf_letters.delay(cmd, user, _hash, to_address, str(to_address_coded), from_address)
-	return pdf_file_name
+def save_postcard(_hash, image, message, user, to_address, from_address):
+	env = Environment(loader=FileSystemLoader('templates'))
+	template = env.get_template('postcard.html')
+	tasks.wkhtmltopdf_postcards.delay(_hash, image, message, user, to_address, from_address, template)
 
 def render_text(message):
 	env = Environment(loader=FileSystemLoader('templates'))
@@ -60,13 +55,6 @@ def render_text(message):
 	generated_html = template.render(message=message)
 	return generated_html
 
-def render_image(image,userid):
-	env = Environment(loader=FileSystemLoader('templates'))
-	template = env.get_template('postcard.html')
-	url = tasks.s3_upload_image.delay(image,userid)
-	url.wait()
-	generated_html = template.render(img=url.get())
-	return generated_html
 
 def render_html(html):
 	return html
@@ -109,7 +97,7 @@ def send_letter(user,to_name,to_address,body):
 
 	if to_address_coded.valid_address:
 
-		to_name = to_name.replace("_"," ")
+		to_name = to_name.replace("_"," ").replace('"','')
 		to_name = re.sub("@\w+."+os.environ["domain"],"",to_name)
 		to_name = ucfirst(to_name)
 
@@ -155,21 +143,26 @@ def send_postcard(user,to_name,to_address,message,picture):
 		body["to"]["address"] = str(to_address_coded)
 		body["_from"]["address"] = str(from_address_coded)
 
-		result = save_postcard(render_image(message), user, to_address, to_address_coded, from_address)
-		return result
+		_hash = hashlib.md5(user.get("username")+str(datetime.datetime.now())).hexdigest()
+		save_postcard(_hash, picture, message, user, to_address, from_address)
+		return jsuccess_with_txid(_hash)
 	else:
 		return jfail("invalid address")
 
 
 def api_user_json(user):
+	toReturn = {"status": "success"}
 	postcards = user.get_postcards()
 	postcards_json = []
 	for p in postcards:
 		p_obj = {}
-		p_obj["date"] = arrow.get(parser.parse(p["job"]["date_created"])).format("MMMM D, YYYY")
+		p_obj["date"] = arrow.get(parser.parse(p["job"]["date_created"])).format("h:m A MMMM D, YYYY")
 		p_obj["picture"] = p["picture"]
 		p_obj["price"] = float(p["job"]["price"])*1.75
 		p_obj["name"] = ucfirst(p["job"]["to"]["name"])
 		p_obj["message"] = p["job"]["message"]
 		p_obj["address"] = ucfirst(p["job"]["to"]["address_line1"]) + ", " + ucfirst(p["job"]["to"]["address_city"]) + ", " + p["job"]["to"]["address_state"] + p["job"]["to"]["address_zip"]
+
+	toReturn["results"] = postcards_json
+	return json.dumps(toReturn)
 
