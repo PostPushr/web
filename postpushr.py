@@ -35,7 +35,7 @@ def api_register():
 	username = request.form.get('email')
 	password = request.form.get('password')
 	name = request.form.get('name')
-	address = request.form.get('address')
+	address = request.form.get('address').lower().strip()
 	token = request.form.get('token')
 
 	if None in [username,password,name,address,token]:
@@ -158,7 +158,7 @@ def incoming_letter_email():
 		return Response(response=jfail("missing parameters"), status=200)
 
 	to_name = request.form.get('to')
-	to_address = unicode(request.form.get('subject')).encode('ascii','xmlcharrefreplace')
+	to_address = unicode(request.form.get('subject')).encode('ascii','xmlcharrefreplace').lower().replace("fw:","").replace("re:","").strip()
 
 	if None in [body,username,to_name,to_address]:
 		return Response(response=jfail("missing parameters"), status=200)
