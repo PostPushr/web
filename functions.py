@@ -4,6 +4,7 @@ import requests, hashlib, os, subprocess, json, time, codecs
 import lob, pymongo, stripe, datetime, re, boto
 from pygeocoder import Geocoder, GeocoderError
 from tasks import wkhtmltopdf_letters, s3_upload, wkhtmltopdf_postcards
+from flask import g
 from var import *
 from emails import *
 
@@ -30,6 +31,14 @@ def jsuccess_with_txid(txid):
 
 def jfail(reason):
 	return json.dumps({"status": "error","error": reason})
+
+def jfail_address(address):
+	try:
+		if g.over_api:
+			return json.dumps({"status": "error","error": "over geocoding query limit"})
+	except Exception:
+		pass
+	return json.dumps({"status": "error","error": "invalid address " + address})
 
 def save_letter(html, user, to_address, to_address_coded, from_address):
 	_hash = hashlib.md5(user.get("username")+str(datetime.datetime.now())).hexdigest()
@@ -88,10 +97,17 @@ def create_address_from_geocode(name, address_coded, email=None):
 def ucfirst(txt):
 	return ' '.join([x[:1].upper()+x[1:].lower() for x in txt.split(' ')])
 
-def send_letter(user,to_name,to_address,body):
+def gcode(address):
 	try:
-		to_address_coded = Geocoder.geocode(to_address)
-	except GeocoderError:
+		return Geocoder.geocode(address)
+	except GeocoderError, e:
+		if str(e) == "OVER_QUERY_LIMIT":
+			g.over_api = True
+		return None
+
+def send_letter(user,to_name,to_address,body):
+	to_address_coded = gcode(to_address)
+	if to_address_coded == None:
 		return_unknown_address(user,to_address)
 		return
 
@@ -104,11 +120,13 @@ def send_letter(user,to_name,to_address,body):
 		message = {"to": {"prefix": "", "name": to_name}, "_from": {"prefix": "", "name": user.get("name")}, "body": body}
 
 		to_address = create_address_from_geocode(message["to"]["name"], to_address_coded)
-		try:
-			from_address_coded = Geocoder.geocode(user.get('address'))
-		except GeocoderError:
+		from_address_coded = gcode(user.get('address'))
+		if from_address_coded == None:
 			time.sleep(0.5)
-			from_address_coded = Geocoder.geocode(user.get('address'))
+			from_address_coded = gcode(user.get('address'))
+			if from_address_coded == None:
+				return_unknown_address(user,user.get('address'))
+				return
 
 		from_address = create_address_from_geocode(message["_from"]["name"], from_address_coded, email=user.get('username'))
 
@@ -122,21 +140,22 @@ def send_letter(user,to_name,to_address,body):
 		return
 
 def send_postcard(user,to_name,to_address,message,picture):
-	try:
-		to_address_coded = Geocoder.geocode(to_address)
-	except GeocoderError:
-		return jfail("invalid address")
+	to_address_coded = gcode(to_address)
+	if to_address_coded == None:
+		return jfail_address(to_address)
 
 	if to_address_coded.valid_address:
 
 		back = {"to": {"prefix": "", "name": to_name}, "_from": {"prefix": "", "name": user.get("name")}, "message": message}
 
 		to_address = create_address_from_geocode(back["to"]["name"], to_address_coded)
-		try:
-			from_address_coded = Geocoder.geocode(user.get('address'))
-		except GeocoderError:
+		from_address_coded = gcode(user.get('address'))
+		
+		if from_address_coded == None:
 			time.sleep(0.5)
-			from_address_coded = Geocoder.geocode(user.get('address'))
+			from_address_coded = gcode(user.get('address'))
+			if from_address_coded == None:
+				return jfail_address(user.get('address'))
 
 		from_address = create_address_from_geocode(back["_from"]["name"], from_address_coded, email=user.get('username'))
 

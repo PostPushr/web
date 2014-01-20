@@ -1,5 +1,5 @@
 from var import *
-from flask import url_for
+from flask import url_for, g
 import sendgrid
 
 def return_unknown_sender(email):
@@ -10,7 +10,22 @@ def return_unknown_sender(email):
 	message.add_to(email)
 	s.web.send(message)
 
+def return_over_geocode_api(user):
+	subject = "PostPushr API Error"
+	text = "Hello {0},\n\nYou are receiving this email because you tried to send a physical document via PostPushr. Unfortunately, PostPushr has currently exceeded the daily limit of the API we use for address normalization.\n\nPlease try to to send your document again tomorrow, or visit http://www.{2} for more info.\n\nPostPushr Error Bot".format(user.get("name"),address,os.environ['domain'])
+	html = "Hello {0},<br /><br />ou are receiving this email because you tried to send a physical document via PostPushr. Unfortunately, PostPushr has currently exceeded the daily limit of the API we use for address normalization.<br /><br />Please try to to send your document again tomorrow, or visit <a href='http://www.{2}'>our site</a> for more info.<br /><br />PostPushr Error Bot".format(user.get("name"),address,os.environ['domain'])
+	message = sendgrid.Message(("errors@{0}".format(os.environ['domain']),"PostPushr Error Bot"), subject, text, html)
+	message.add_to(user.get("mailing"),user.get("name"))
+	s.web.send(message)
+
 def return_unknown_address(user,address):
+	try:
+		if g.over_api:
+			return_over_geocode_api(user)
+			return
+	except Exception:
+		pass
+	
 	subject = "Unknown PostPushr Destination Address"
 	text = "Hello {0},\n\nYou are receiving this email because you tried to send a physical document via PostPushr to an invalid address. PostPushr could not recognize \"{1}\".\n\nPlease try to to send your document again, or visit http://www.{2} for more info.\n\nPostPushr Error Bot".format(user.get("name"),address,os.environ['domain'])
 	html = "Hello {0},<br /><br />You are receiving this email because you tried to send a physical document via PostPushr to an invalid address. PostPushr could not recognize <tt style='display: inline;'>{1}</tt>.<br /><br />Please try to to send your document again, or visit <a href='http://www.{2}'>our site</a> for more info.<br /><br />PostPushr Error Bot".format(user.get("name"),address,os.environ['domain'])
