@@ -33,10 +33,10 @@ def return_unknown_address(user,address):
 	message.add_to(user.get("mailing"),user.get("name"))
 	s.web.send(message)
 
-def return_confirmed_letter(user,address,cost,_hash):
+def return_confirmed_letter(user,address,to_name,cost,_hash):
 	subject = "PostPushr Letter Confirmation"
-	text = "Hello {0},\n\nYou are receiving this email because you have sent a physical document via PostPushr. PostPushr has successfully posted your letter to \"{1}\" at \"{2}\", for a total cost of {3}.\n\nPlease visit http://www.{4} for more info.\n\nPostPushr Confirmation Bot".format(user.get("name"),address.name,str(address),'$%0.2f' % (float(cost)/100.0),os.environ['domain']+"/letter/"+_hash)
-	html = "Hello {0},<br /><br />You are receiving this email because you have sent a physical document via PostPushr. PostPushr has successfully posted your letter to <tt style=\"display:inline;\">{1}</tt> at <tt style=\"display:inline;\">{2}</tt>, for a total cost of {3}.<br /><br />Please visit <a href='http://www.{4}'>our site</a> for more info.<br /><br />PostPushr Confirmation Bot".format(user.get("name"),address.name,str(address),'$%0.2f' % (float(cost)/100.0),os.environ['domain']+"/letter/"+_hash)
+	text = "Hello {0},\n\nYou are receiving this email because you have sent a physical document via PostPushr. PostPushr has successfully posted your letter to \"{1}\" at \"{2}\", for a total cost of {3}.\n\nPlease visit http://www.{4} for more info.\n\nPostPushr Confirmation Bot".format(user.get("name"),to_name,address,'$%0.2f' % (float(cost)/100.0),os.environ['domain']+"/letter/"+_hash)
+	html = "Hello {0},<br /><br />You are receiving this email because you have sent a physical document via PostPushr. PostPushr has successfully posted your letter to <tt style=\"display:inline;\">{1}</tt> at <tt style=\"display:inline;\">{2}</tt>, for a total cost of {3}.<br /><br />Please visit <a href='http://www.{4}'>our site</a> for more info.<br /><br />PostPushr Confirmation Bot".format(user.get("name"),to_name,address,'$%0.2f' % (float(cost)/100.0),os.environ['domain']+"/letter/"+_hash)
 	message = sendgrid.Message(("confirmations@{0}".format(os.environ['domain']),"PostPushr Confirmation Bot"), subject, text, html)
 	message.add_to(user.get("mailing"),user.get("name"))
 	s.web.send(message)
