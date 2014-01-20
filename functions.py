@@ -5,6 +5,7 @@ import lob, pymongo, stripe, datetime, re, boto
 from pygeocoder import Geocoder, GeocoderError
 from tasks import wkhtmltopdf_letters, s3_upload, wkhtmltopdf_postcards
 from flask import g
+from collections import namedtuple
 from var import *
 from emails import *
 
@@ -50,7 +51,7 @@ def save_letter(html, user, to_address, to_address_coded, from_address):
 	html_file = codecs.open(html_file_name, "w+b", "utf-8-sig")
 	html_file.write(html)
 	cmd = "{0}/wkhtmltopdf --encoding utf8 -s Letter {1} {2}".format(bin_dir,html_file_name,pdf_file_name)
-	wkhtmltopdf_letters.delay(cmd, user, _hash, to_address, str(to_address_coded), to_address_coded.name, from_address)
+	wkhtmltopdf_letters.delay(cmd, user, _hash, to_address, str(to_address_coded), from_address)
 	return pdf_file_name
 
 def save_postcard(_hash, image, message, user, to_address, from_address):
@@ -111,7 +112,8 @@ def gcode_serialize(address_coded):
 def gcode(address):
 	coded = gcode_cache.find_one({'a': address})
 	if coded:
-		return coded["b"]
+		CachedGeoCode = namedtuple('CachedGeoCode', 'valid_address street_number route city state__short_name country__short_name postal_code')
+		return CachedGeoCode(**coded["b"])
 	try:
 		coded = Geocoder.geocode(address)
 		gcode_cache.insert({'a': address, 'b': gcode_serialize(coded)})
