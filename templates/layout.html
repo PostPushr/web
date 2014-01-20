@@ -35,15 +35,6 @@
   <img style="height: 20%; width: 20%;" src="{{ url_for('static', filename='img/sub.png') }}" />
 </div>
 <br /><br />
-<div id="messages" style="text-align:center;">
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        {% for message in messages %}
-         <p style="color: red;"><small>{{ message }}</small></p>
-        {% endfor %}
-      {% endif %}
-    {% endwith %}
-</div>
 {% block body %}
 {% endblock %}
   </body>

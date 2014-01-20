@@ -1,9 +1,16 @@
 {% extends 'layout.html' %}
 {% block body %}
 <div style="text-align:center;">
-	<p onclick="window.location='mailto:new@add.postpushr.com?subject={{user.get('_id')}}'">new@add.postpushr.com with subject <code>{{user.get('_id')}}</code> to add additional emails</p>
-	<br />
-	<h2>Letters Sent</h2>
+	<p>
+		<a class="btn btn-primary btn-success" style="margin-bottom:5px;" onclick="window.location='mailto:new@add.postpushr.com?subject={{user.get('_id')}}'">Add Aditional Email</a>
+		<br />
+		<span>{{ user.username }}</span>
+		{% if user.get('emails')|length > 0 %}
+			{% for email in user.get('emails') %}
+				| <span>{{ email }}</span>
+			{% endfor %}
+		{% endif %}
+	</p>
 	<br />
 	{% if user.get_letters().count > 0 %}
 	{% for l in user.get_letters().limit(7) %}

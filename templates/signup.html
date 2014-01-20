@@ -1,7 +1,7 @@
 {% extends 'layout.html' %}
 {% block body %}
+  {% include 'messages.html' %}
   <div class="container">
-
     <form class="form-signin" id="form" role="form" method="POST">
       <input type="email" class="form-control" placeholder="Email" name="email" id="email" value="{{email}}" readonly>
       <input type="password" class="form-control" placeholder="Password" name="password" value="******" readonly>
