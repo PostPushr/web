@@ -11,3 +11,7 @@ letters = db.letters
 postcards = db.postcards
 gcode_cache = db.gcode_cache
 bitly = bitly_api.Connection(access_token=os.environ['BITLY_ACCESS_TOKEN'])
+
+
+def ucfirst(txt):
+	return ' '.join([x[:1].upper()+x[1:].lower() for x in txt.split(' ')])

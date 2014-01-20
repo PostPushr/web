@@ -95,9 +95,6 @@ def hash_password(password):
 def create_address_from_geocode(name, address_coded, email=None):
 	return lob.Address.create(name=name, address_line1=address_coded.street_number+" "+address_coded.route, address_city=address_coded.city, address_state=address_coded.state__short_name, address_country=address_coded.country__short_name, address_zip=address_coded.postal_code, email=email)
 
-def ucfirst(txt):
-	return ' '.join([x[:1].upper()+x[1:].lower() for x in txt.split(' ')])
-
 def gcode_serialize(address_coded):
 	c = {}
 	c["full"] = str(address_coded)
