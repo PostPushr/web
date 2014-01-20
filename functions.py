@@ -97,13 +97,24 @@ def create_address_from_geocode(name, address_coded, email=None):
 def ucfirst(txt):
 	return ' '.join([x[:1].upper()+x[1:].lower() for x in txt.split(' ')])
 
+def gcode_serialize(address_coded):
+	c = {}
+	c["valid_address"] = address_coded.valid_address
+	c["street_number"] = address_coded.street_number
+	c["route"] = address_coded.route
+	c["city"] = address_coded.city
+	c["state__short_name"] = address_coded.state__short_name
+	c["country__short_name"] = address_coded.country__short_name
+	c["postal_code"] = address_coded.postal_code
+	return c
+
 def gcode(address):
-	b = gcode_cache.find_one({'a': address})
+	coded = gcode_cache.find_one({'a': address})
 	if b:
-		return b["b"]
+		return coded["b"]
 	try:
 		coded = Geocoder.geocode(address)
-		gcode_cache.insert({'a': address, 'b': coded})
+		gcode_cache.insert({'a': address, 'b': gcode_serialize(coded)})
 		return coded
 	except GeocoderError, e:
 		if str(e) == "OVER_QUERY_LIMIT":
