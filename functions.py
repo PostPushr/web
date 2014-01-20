@@ -50,7 +50,7 @@ def save_letter(html, user, to_address, to_address_coded, from_address):
 	html_file = codecs.open(html_file_name, "w+b", "utf-8-sig")
 	html_file.write(html)
 	cmd = "{0}/wkhtmltopdf --encoding utf8 -s Letter {1} {2}".format(bin_dir,html_file_name,pdf_file_name)
-	wkhtmltopdf_letters.delay(cmd, user, _hash, to_address, str(to_address_coded), from_address)
+	wkhtmltopdf_letters.delay(cmd, user, _hash, to_address, to_address_coded, from_address)
 	return pdf_file_name
 
 def save_postcard(_hash, image, message, user, to_address, from_address):
