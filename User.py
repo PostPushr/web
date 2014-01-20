@@ -42,5 +42,8 @@ class User(object):
 	def get_letters(self):
 		return letters.find({"job.from_address.email": self.get("username")})
 
+	def get_letters_reversed(self):
+		return letters.find({"job.from_address.email": self.get("username")}).sort({"job.date_created": -1})
+
 	def get_postcards(self):
 		return postcards.find({"job.from_address.email": self.get("username")})

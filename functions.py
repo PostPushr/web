@@ -100,6 +100,7 @@ def ucfirst(txt):
 
 def gcode_serialize(address_coded):
 	c = {}
+	c["full"] = str(address_coded)
 	c["valid_address"] = address_coded.valid_address
 	c["street_number"] = address_coded.street_number
 	c["route"] = address_coded.route
@@ -112,7 +113,8 @@ def gcode_serialize(address_coded):
 def gcode(address):
 	coded = gcode_cache.find_one({'a': address})
 	if coded:
-		CachedGeoCode = namedtuple('CachedGeoCode', 'valid_address street_number route city state__short_name country__short_name postal_code')
+		CachedGeoCode = namedtuple('CachedGeoCode', 'full valid_address street_number route city state__short_name country__short_name postal_code')
+		CachedGeoCode.__str__ = lambda x: x[0]
 		return CachedGeoCode(**coded["b"])
 	try:
 		coded = Geocoder.geocode(address)
