@@ -39,3 +39,6 @@ body {
 .smarty-ui{
   z-index: 100;
 }
+.letter{
+  margin-bottom: 0px;
+}

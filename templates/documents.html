@@ -2,19 +2,20 @@
 {% block body %}
 <div style="text-align:center;">
 	<p>
-		<a class="btn btn-primary btn-success" style="margin-bottom:5px;" onclick="window.location='mailto:new@add.postpushr.com?subject={{user.get('_id')}}'">Add Aditional Email</a>
-		<br />
-		<span>{{ user.username }}</span>
+	<div class="btn-group">
+		<button type="button" class="btn btn-default" disabled>{{ user.username }}</button>
 		{% if user.get('emails')|length > 0 %}
 			{% for email in user.get('emails') %}
-				| <span>{{ email }}</span>
+				<button type="button" class="btn btn-default" disabled>{{ email }}</button>
 			{% endfor %}
 		{% endif %}
+		<button type="button" class="btn btn-default" onclick="window.location='mailto:new@add.postpushr.com?subject={{user.get('_id')}}'">...</button>
+	</div>
 	</p>
 	<br />
 	{% if user.get_letters().count > 0 %}
 	{% for l in user.get_letters().limit(7) %}
-	<span class="letter"> <a class="btn btn-primary" href="{{url_for('get_letter',_hash=l.jobid)}}">Letter to {{l.job.to.name|ucfirst}} on {{l.job.date_created|dt}} [${{'%0.2f' % ((l.job.price|float)*1.75)}}]</a></span><br /><br />
+	<p class="letter"> <a class="btn btn-primary" href="{{url_for('get_letter',_hash=l.jobid)}}">Letter to {{l.job.to.name|ucfirst}} on {{l.job.date_created|dt}} [${{'%0.2f' % ((l.job.price|float)*1.75)}}]</a></p><br />
 	{% endfor %}
 	{% else %}
 	<p>You haven't sent any documents yet.</p>
