@@ -163,8 +163,8 @@ ul li {
 			<table>
 				<tr>
 					<td>
-						<p style="font-size: 50%; float: left;">{{ message.to.address|safe }}</p>
-						<p style="font-size: 50%; float: right; text-align:right;">{{ message._from.address|safe }}</p>
+						<p style="font-size: 50%; float: left;">{{ message.to.name|safe }}<br />{{ message.to.address|safe }}</p>
+						<p style="font-size: 50%; float: right; text-align:right;">{{ message._from.name }}<br />{{ message._from.address|safe }}</p>
 						<div style="clear: both;"></div>
 						<br />
 						<p>{{ message.to.prefix }} {{ message.to.name|safe }}</p>
