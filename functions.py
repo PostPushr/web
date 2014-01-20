@@ -98,8 +98,13 @@ def ucfirst(txt):
 	return ' '.join([x[:1].upper()+x[1:].lower() for x in txt.split(' ')])
 
 def gcode(address):
+	b = gcode_cache.find_one({'a': address})
+	if b:
+		return b["b"]
 	try:
-		return Geocoder.geocode(address)
+		coded = Geocoder.geocode(address)
+		gcode_cache.insert({'a': address, 'b': coded})
+		return coded
 	except GeocoderError, e:
 		if str(e) == "OVER_QUERY_LIMIT":
 			g.over_api = True

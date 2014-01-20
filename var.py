@@ -9,4 +9,5 @@ db = client.postpushr
 users = db.users
 letters = db.letters
 postcards = db.postcards
+gcode_cache = db.gcode_cache
 bitly = bitly_api.Connection(access_token=os.environ['BITLY_ACCESS_TOKEN'])
