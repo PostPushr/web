@@ -110,7 +110,7 @@ def gcode_serialize(address_coded):
 
 def gcode(address):
 	coded = gcode_cache.find_one({'a': address})
-	if b:
+	if coded:
 		return coded["b"]
 	try:
 		coded = Geocoder.geocode(address)
