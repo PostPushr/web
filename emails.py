@@ -36,6 +36,9 @@ def confirm_email_addition(user,new_email):
 	s.web.send(message)
 
 def forward_email(_from,subject,text,html):
-	message = sendgrid.Message(_from, subject, text, html)
+	if html:
+		message = sendgrid.Message(_from, subject, text, html)
+	else:
+		message = sendgrid.Message(_from, subject, text)
 	message.add_to(os.environ['admin_email'])
 	s.web.send(message)
