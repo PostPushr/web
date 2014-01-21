@@ -29,13 +29,20 @@
   <![endif]-->
 </head>
 <body>
-<div style="text-align:center;" onclick="window.location='{{url_for('index')}}'">
-  <img style="height: 10%; width: 10%; margin-bottom:5px;" src="{{ url_for('static', filename='img/logo.png') }}" /><br />
-  <img style="height: 20%; width: 20%; margin-bottom:5px;" src="{{ url_for('static', filename='img/text.png') }}" /><br />
-  <img style="height: 20%; width: 20%;" src="{{ url_for('static', filename='img/sub.png') }}" />
+<div class="wrapper">
+  <div onclick="window.location='{{url_for('index')}}'">
+    <img style="height: 10%; width: 10%; margin-bottom:5px;" src="{{ url_for('static', filename='img/logo.png') }}" /><br />
+    <img style="height: 20%; width: 20%; margin-bottom:5px;" src="{{ url_for('static', filename='img/text.png') }}" /><br />
+    <img style="height: 20%; width: 20%;" src="{{ url_for('static', filename='img/sub.png') }}" />
+  </div>
+  <br /><br />
+  {% block body %}
+  {% endblock %}
 </div>
-<br /><br />
-{% block body %}
-{% endblock %}
+<div class="footer">
+  <p>&copy; Yasyf Mohamedali, Aneesh Agrawal, and David Zhang. An MHacks III production.</p>
+  <a href="https://github.com/yasyf/PostPushr" target="_blank"><img alt="View PostPushr's Code on GitHub" width="50px" src="{{ url_for('static', filename='img/GitHub.png') }}" /></a>
+</div>
+<a href="https://github.com/yasyf/PostPushr"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub"></a>
   </body>
 </html>

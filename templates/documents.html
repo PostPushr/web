@@ -1,6 +1,6 @@
 {% extends 'layout.html' %}
 {% block body %}
-<div style="text-align:center;">
+<div>
 	<p>
 	<div class="btn-group">
 		<button type="button" class="btn btn-default" disabled>{{ user.username }}</button>
@@ -14,9 +14,14 @@
 	</p>
 	<br />
 	{% if user.get_letters_count() > 0 %}
-	{% for l in user.get_letters_reversed().limit(7) %}
-	<p class="letter"> <a class="btn btn-primary" href="{{url_for('get_letter',_hash=l.jobid)}}">Letter to {{l.job.to.name|ucfirst}} on {{l.job.date_created|dt}} [${{'%0.2f' % ((l.job.price|float)*1.75)}}]</a></p><br />
-	{% endfor %}
+	<div class="letters">
+		{% for l in user.get_letters_reversed().limit(7) %}
+		<p class="letter">
+			<a class="btn btn-primary" href="{{url_for('get_letter',_hash=l.jobid)}}">Letter to {{l.job.to.name|ucfirst}} on {{l.job.date_created|dt}} [${{'%0.2f' % ((l.job.price|float)*1.75)}}]</a>
+		</p>
+		<br />
+		{% endfor %}
+	</div>
 	{% else %}
 	<p>You haven't sent any documents yet</p>
 	{% endif %}

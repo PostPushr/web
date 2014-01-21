@@ -42,3 +42,15 @@ body {
 .letter{
   margin-bottom: 0px;
 }
+.wrapper{
+  text-align: center;
+}
+.footer{
+  padding-top: 50px;  
+  text-align: center;
+  width: 100%;
+}
+.letters{
+  overflow:scroll;
+  height:300px;
+}
