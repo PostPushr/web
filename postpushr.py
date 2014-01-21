@@ -88,7 +88,7 @@ def api_postcard_create():
 
 @app.route('/', methods=['POST', 'GET'])
 def index():
-	if session.get('userid'):
+	if 'userid' in session:
 		return redirect(url_for('documents'))
 	if request.method == "POST":
 		user = User(request.form.get('email'))
@@ -106,7 +106,7 @@ def index():
 
 @app.route('/signup', methods=['POST', 'GET'])
 def signup():
-	if session.get('userid'):
+	if 'userid' in session:
 		return redirect(url_for('documents'))
 	if request.method == "POST":
 		username = session.pop("username")
@@ -132,14 +132,21 @@ def documents():
 	if session.get('userid') == None:
 		return redirect(url_for('index'))
 	user = User(None,userid=session["userid"])
-	return render_template('documents.html',user=user)
+	if user.is_valid():
+		return render_template('documents.html',user=user)
+	else:
+		return redirect(url_for('logout'))
 
 @app.route('/letter/<_hash>')
 def get_letter(_hash):
-	if session.get('userid') == None:
-		return redirect(url_for('index'))
 	l = letters.find_one({"jobid": _hash})
-	return render_template('document.html',l=l)
+	if session.get('userid') == None or l == None:
+		return redirect(url_for('index'))
+	user = User(None,userid=session["userid"])
+	if user.is_valid():
+		return render_template('document.html',l=l)
+	else:
+		return redirect(url_for('logout'))
 
 @app.route('/logout')
 def logout():
