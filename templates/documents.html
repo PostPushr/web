@@ -9,7 +9,8 @@
 				<button type="button" class="btn btn-default" disabled>{{ email }}</button>
 			{% endfor %}
 		{% endif %}
-		<button type="button" class="btn btn-default" onclick="window.open('https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=new@add.postpushr.com&amp;su={{user.get('_id')}}');window.location='mailto:new@add.postpushr.com?subject={{user.get('_id')}}'">...</button>
+		<button type="button" class="btn btn-default" onclick="$('#add_modal').modal();">...</button>
+		<p id="add_info"></p>
 	</div>
 	</p>
 	<br />
@@ -26,4 +27,45 @@
 	<p>You haven't sent any documents yet</p>
 	{% endif %}
 </div>
+<div class='modal fade' id='add_modal'>
+  <div class='modal-dialog'>
+	<div class='modal-content'>
+	  <div class='modal-header'>
+		<button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>
+		<h4 class='modal-title'>Authorize Additional Email</i></h4>
+	  </div>
+	  <div class='modal-body'>
+		<p>
+			<a data-toggle='modal' href='mailto:new@add.postpushr.com?subject={{user.get('_id')}}' class='btn btn-info'><span class='glyphicon glyphicon-send'></span> &nbsp; Email Client</a>
+			<a data-toggle='modal' target='_blank' href='https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=new@add.postpushr.com&amp;su={{user.get('_id')}}' class='btn btn-info'><span class='glyphicon glyphicon-send'></span> &nbsp; Gmail</a>
+			<a data-toggle='modal' onclick='$("#manual_add_modal").modal();' class='btn btn-info'><span class='glyphicon glyphicon-envelope'></span> &nbsp; Other Email</a>
+		</p>
+	  </div>
+	  <div class='modal-footer'>
+		<button type='button' onclick='$("#add_modal").modal("hide");' class='btn btn-primary'>Close</button>
+	  </div>
+	</div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class='modal fade' id='manual_add_modal'>
+  <div class='modal-dialog'>
+	<div class='modal-content'>
+	  <div class='modal-header'>
+		<button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>
+		<h4 class='modal-title'>Seller Contact Information</h4>
+	  </div>
+	  <div class='modal-body'>
+	  <p>Send an email with the following details to authorize.</p>
+	  <p><b>To:</b> new@add.postpushr.com</p>
+	  <p><b>From:</b> Your New Email</p>
+	  <p><b>Subject:</b> <code>{{user.get('_id')}}</code> </p>
+	  <p><b>Body:</b> Anything </p>
+	  </div>
+	  <div class='modal-footer'>
+		<button type='button'  data-dismiss='modal' class='btn btn-primary'>Close</button>
+	  </div>
+	</div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 {% endblock %}
