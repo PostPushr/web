@@ -1,4 +1,6 @@
-##PostPushr
+##PostPushr Web
+Migrated from [yasyf/PostPushr](https://github.com/yasyf/PostPushr)
+
 http://www.postpushr.com
 
 ![PostPushr Dashboard](http://cl.ly/TRnH/Screen%20Shot%202014-01-19%20at%208.39.23%20AM.jpg "PostPushr Dashboard")
@@ -10,7 +12,7 @@ While 10+ email accounts and thousands of messages a day may be great, there's s
 
 ###Why?
 
-PostPushr combines physical delivery with the speed and universality of the cloud. Bid farewell to fumbling through cluttered drawers for stamps and those oh-so-obnoxious trips down to the post office. With PostPushr, all you have to do is pop open up your email, type out your message, and hit send. Instant confirmation of your now-mailed letter will leave you ever so satisfied. Standing on the shoulders of giants, PostPushr works with Lob, Sendgrid, Stripe, Google, Mongo, and Namecheap to provide you with the highest level of service.
+PostPushr combines physical delivery with the speed and universality of the cloud. Bid farewell to fumbling through cluttered drawers for stamps and those oh-so-obnoxious trips down to the post office. With PostPushr, all you have to do is pop open up your email, type out your message, and hit send. Instant confirmation of your now-mailed letter will leave you ever so satisfied. Standing on the shoulders of giants, PostPushr works with Lob, Sendgrid, Stripe, Google, MongoDB, and Namecheap to provide you with the highest level of service.
 
 ###When?
 
