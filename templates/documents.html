@@ -9,7 +9,7 @@
 				<button type="button" class="btn btn-default" disabled>{{ email }}</button>
 			{% endfor %}
 		{% endif %}
-		<button type="button" class="btn btn-default" onclick="window.location='mailto:new@add.postpushr.com?subject={{user.get('_id')}}'">...</button>
+		<button type="button" class="btn btn-default" onclick="window.open('https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=new@add.postpushr.com&amp;su={{user.get('_id')}}');window.location='mailto:new@add.postpushr.com?subject={{user.get('_id')}}'">...</button>
 	</div>
 	</p>
 	<br />
