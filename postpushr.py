@@ -117,11 +117,11 @@ def signup():
 		address = request.form.get("address")
 		if User(username).is_valid():
 			flash("That email has already been registered.")
-			return redirect(url_for('logout'))
+			return redirect(url_for('index'))
 		cust = create_stripe_cust(token,username)
 		if cust == None:
 			flash("Your card was declined.")
-			return redirect(url_for('logout'))
+			return redirect(url_for('signup'))
 		userid = create_user(username,hash_password(password),name=name,snapchat=snapchat,token=cust,address=address)
 		session["userid"] = userid
 		return redirect(url_for('documents'))
