@@ -32,9 +32,9 @@ def api_login():
 
 @app.route('/api/register', methods=['POST'])
 def api_register():
-	username = request.form.get('email')
+	username = request.form.get('email').strip()
 	password = request.form.get('password')
-	name = request.form.get('name')
+	name = request.form.get('name').strip()
 	address = request.form.get('address').lower().strip()
 	token = request.form.get('token')
 
@@ -109,12 +109,12 @@ def signup():
 	if 'userid' in session:
 		return redirect(url_for('documents'))
 	if request.method == "POST":
-		username = session.pop("username")
+		username = session.pop("username").strip()
 		password = session.pop("password")
-		name = request.form.get("name")
-		snapchat = request.form.get("snapchat")
+		name = request.form.get("name").strip()
+		snapchat = request.form.get("snapchat").strip()
 		token = request.form.get("stripeToken")
-		address = request.form.get("address")
+		address = request.form.get("address").lower().strip()
 		if User(username).is_valid():
 			flash("That email has already been registered.")
 			return redirect(url_for('index'))
