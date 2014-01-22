@@ -9,7 +9,7 @@
       <input type="text" class="form-control" placeholder="Snapchat" name="snapchat" required>
       <textarea name="address"  class="form-control last" placeholder="Address" required></textarea>
       <button class="btn btn-lg btn-primary btn-block" type="submit">Register</button>
-      <small>We may authorize a $1 charge to verify your card.</small>
+      <small>We will authorize a $1 charge to verify your card.</small>
     </form>
   </div>
 <script>
@@ -18,8 +18,9 @@ $(document).ready(function() {
   var handler = StripeCheckout.configure({
     key: 'pk_live_hLVwTAt87sSIU7VUIh5ofdzm',
     image: 'http://www.postpushr.com/static/img/logo.png',
+    panelLabel: 'Authorize',
     amount: 100,
-    panelLabel: 'Register',
+    currency: 'usd',
     token: function(token, args) {
       var $form = $('#form');
       $form.append($('<input type="hidden" name="stripeToken">').val(token.id));
@@ -31,7 +32,7 @@ $(document).ready(function() {
     handler.open({
       name: 'PostPushr',
       description: $('#name').val(),
-      email: $('#email').val()
+      email: $('#email').val(),
     });
     e.preventDefault();
   });
