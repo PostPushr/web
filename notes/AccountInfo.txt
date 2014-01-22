@@ -1,8 +1,0 @@
-When adding an email, make it clear this email will be
-a) used for password reset purposes
-b) the only initial authorized email address that requests will be accepted from for this account
-
-Password information:
-- Algorithm: sha1(sha1(password) + sha1(static_salt))
-- Length, complexity restrictions: further iterations
-
