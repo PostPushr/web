@@ -4,7 +4,7 @@
 	<p>
 	<div class="btn-group">
 		<button type="button" class="btn btn-default" disabled>{{ user.username }}</button>
-		{% if user.get('emails')|length > 0 %}
+		{% if user.get('emails') %}
 			{% for email in user.get('emails') %}
 				<button type="button" class="btn btn-default" disabled>{{ email }}</button>
 			{% endfor %}
