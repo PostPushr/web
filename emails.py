@@ -51,7 +51,7 @@ def confirm_email_addition(user,new_email):
 	s.web.send(message)
 
 def forward_email(_from,subject,text,html):
-	if html:
+	if html != None and html != "None":
 		message = sendgrid.Message(_from, subject, text, html)
 	else:
 		message = sendgrid.Message(_from, subject, text)
