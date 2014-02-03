@@ -13,15 +13,17 @@ from hashids import Hashids
 def gen_auth_token(userid):
 	hashids = Hashids(salt=userid)
 	dt = datetime.datetime.now()
-	to_encrypt = int(dt.strftime("%d")+dt.strftime("%m")+dt.strftime("%Y"))
-	return hashids.encrypt((to_encrypt,int(dt.strftime("%S")+to_encrypt)))
+	to_encrypt = int(dt.strftime("%d"))+int(dt.strftime("%m"))+int(dt.strftime("%Y"))
+	return hashids.encrypt(to_encrypt,int(dt.strftime("%S"))+to_encrypt)
 
 def check_auth_token(token,userid):
 	hashids = Hashids(salt=userid)
 	dt = datetime.datetime.now()
 	raw = hashids.decrypt(token)
+	print raw
+	print int(dt.strftime("%d"))+int(dt.strftime("%m"))+int(dt.strftime("%Y"))
 	try:
-		return int(raw[0] == int(dt.strftime("%d")+dt.strftime("%m")+dt.strftime("%Y")))
+		return raw[0] == int(dt.strftime("%d"))+int(dt.strftime("%m"))+int(dt.strftime("%Y"))
 	except IndexError:
 		return 2
 

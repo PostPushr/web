@@ -34,16 +34,26 @@ def api_login():
 def api_token_request():
 	username = request.form.get('email')
 	password = request.form.get('password')
+	token = request.form.get('token')
 
-	if None in [username,password]:
+	if len([x for x in [username,password,token] if x == None]) > 1:
 		return Response(response=jfail("missing required parameters"), status=200)
 
 	user = User(username)
 	if user.is_valid():
-		if user.check_pass_hash(password):
-			return Response(response=jsuccess_with_token(user.get_token()), status=200)
+		if password:
+			if user.check_pass_hash(password):
+				return Response(response=jsuccess_with_token(user.get_token()), status=200)
+			else:
+				return Response(response=jfail("incorrect password"), status=200)
 		else:
-			return Response(response=jfail("incorrect password"), status=200)
+			checked = user.check_token(token)
+			if checked == 1:
+				return Response(response=jsuccess(), status=200)
+			elif checked == 0:
+				return Response(response=jfail("expired token"), status=200)
+			else:
+				return Response(response=jfail("invalid token"), status=200)
 	else:
 		return Response(response=jfail("user does not exist"), status=200)
 
@@ -60,7 +70,7 @@ def api_user():
 		checked = user.check_token(token)
 		if checked == 1:
 			return Response(response=api_user_json(user), status=200)
-		elif checked == 2:
+		elif checked == 0:
 			return Response(response=jfail("expired token"), status=200)
 		else:
 			return Response(response=jfail("invalid token"), status=200)
@@ -119,7 +129,7 @@ def api_postcard_create():
 		checked = user.check_token(token)
 		if checked == 1:
 			return Response(response=send_postcard(user,name,address,message,picture), status=200)
-		elif checked == 2:
+		elif checked == 0:
 			return Response(response=jfail("expired token"), status=200)
 		else:
 			return Response(response=jfail("invalid token"), status=200)
