@@ -8,7 +8,21 @@ from flask import g
 from collections import namedtuple
 from var import *
 from emails import *
+from hashids import Hashids
 
+def gen_auth_token(userid):
+	hashids = Hashids(salt=userid)
+	dt = datetime.datetime.now()
+	return hashids.encrypt(int(dt.strftime("%d")+dt.strftime("%m")+dt.strftime("%Y")))
+
+def check_auth_token(token,userid):
+	hashids = Hashids(salt=userid)
+	dt = datetime.datetime.now()
+	raw = hashids.decrypt(token)
+	try:
+		return int(raw == int(dt.strftime("%d")+dt.strftime("%m")+dt.strftime("%Y")))
+	except IndexError:
+		return 2
 
 def launch_celery():
 	if os.environ.get('dev') == "True":
@@ -29,6 +43,9 @@ def jsuccess():
 
 def jsuccess_with_txid(txid):
 	return json.dumps({"status": "success", "txid": txid})
+
+def jsuccess_with_token(token):
+	return json.dumps({"status": "success", "token": token})
 
 def jfail(reason):
 	return json.dumps({"status": "error","error": reason})

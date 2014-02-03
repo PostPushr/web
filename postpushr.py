@@ -24,11 +24,49 @@ def api_login():
 	user = User(username)
 	if user.is_valid():
 		if user.check_pass_hash(password):
-			return Response(response=api_user_json(user), status=200)
+			return Response(response=jsuccess(), status=200)
 		else:
 			return Response(response=jfail("incorrect password"), status=200)
 	else:
 		return Response(response=jfail("user does not exist"), status=200)
+
+@app.route('/api/token', methods=['POST'])
+def api_token_request():
+	username = request.form.get('email')
+	password = request.form.get('password')
+
+	if None in [username,password]:
+		return Response(response=jfail("missing required parameters"), status=200)
+
+	user = User(username)
+	if user.is_valid():
+		if user.check_pass_hash(password):
+			return Response(response=jsuccess_with_token(user.get_token()), status=200)
+		else:
+			return Response(response=jfail("incorrect password"), status=200)
+	else:
+		return Response(response=jfail("user does not exist"), status=200)
+
+@app.route('/api/user', methods=['POST'])
+def api_user():
+	username = request.form.get('email')
+	token = request.form.get('token')
+
+	if None in [username,token]:
+		return Response(response=jfail("missing required parameters"), status=200)
+
+	user = User(username)
+	if user.is_valid():
+		checked = user.check_token(token)
+		if checked == 1:
+			return Response(response=api_user_json(user), status=200)
+		elif checked == 2:
+			return Response(response=jfail("expired token"), status=200)
+		else:
+			return Response(response=jfail("invalid token"), status=200)
+	else:
+		return Response(response=jfail("user does not exist"), status=200)
+
 
 @app.route('/api/register', methods=['POST'])
 def api_register():
@@ -66,23 +104,25 @@ def api_postcard_callback():
 
 @app.route('/api/create/postcard', methods=['POST'])
 def api_postcard_create():
-	username = request.form.get('username')
-	password = request.form.get('password')
+	username = request.form.get('email')
+	token = request.form.get('token')
 	name = request.form.get('name')
 	message = request.form.get('message')
 	address = request.form.get('address')
 	picture = request.files['picture']
-
 
 	if None in [username,password,name,message,address,picture]:
 		return Response(response=jfail("missing required parameters"), status=200)
 
 	user = User(username)
 	if user.is_valid():
-		if user.check_pass_hash(password):
+		checked = user.check_token(token)
+		if checked == 1:
 			return Response(response=send_postcard(user,name,address,message,picture), status=200)
+		elif checked == 2:
+			return Response(response=jfail("expired token"), status=200)
 		else:
-			return Response(response=jfail("incorrect password"), status=200)
+			return Response(response=jfail("invalid token"), status=200)
 	else:
 		return Response(response=jfail("user does not exist"), status=200)
 

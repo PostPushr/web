@@ -12,6 +12,7 @@ boto==2.23.0
 celery==3.1.8
 distribute==0.6.34
 gunicorn==18.0
+hashids==0.8.3
 itsdangerous==0.23
 kombu==3.0.10
 lob-python==1.0

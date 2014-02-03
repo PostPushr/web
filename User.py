@@ -32,6 +32,12 @@ class User(object):
 	def check_pass(self,passwd):
 		return self.check_pass_hash(functions.hash_password(passwd))	
 
+	def get_token(self):
+		return functions.gen_auth_token(str(self.obj["_id"]))
+
+	def check_token(self,token):
+		return functions.check_auth_token(token,str(self.obj["_id"]))
+
 	def check_pass_hash(self,passwd):
 		return passwd == self.obj["password"]	
 
