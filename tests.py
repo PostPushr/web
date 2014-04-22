@@ -10,7 +10,7 @@ def run_simple():
 	message = {"to": {"prefix": "Dear", "name": "Test User"}, "_from": {"prefix": "Sincerely,", "name": "Yasyf Mohamedali"}, "body": body}
 
 	to_address = functions.lob.Address.create(name=message["to"]["name"], address_line1='104 Printing Boulevard', address_city='Boston', address_state='MA', address_country='US', address_zip='12345')
-	from_address = functions.lob.Address.create(name=message["_from"]["name"], address_line1='1251 Pintail Drive', address_city='Qualicum Beach', address_state='BC', address_country='CA', address_zip='V9K 1C7')
+	from_address = functions.lob.Address.create(name=message["_from"]["name"], address_line1='1234 Candyland Drive', address_city='Vancouver', address_state='BC', address_country='CA', address_zip='V1Y 7E2')
 
 	message["to"]["address"] = functions.format_address(to_address)
 	message["_from"]["address"] = functions.format_address(from_address)
@@ -30,7 +30,7 @@ def run_advanced():
 	message = {"to": {"prefix": "Dear", "name": "Test User"}, "_from": {"prefix": "Sincerely,", "name": "Yasyf Mohamedali"}, "body": body}
 
 	to_address = functions.lob.Address.create(name=message["to"]["name"], address_line1='104 Printing Boulevard', address_city='Boston', address_state='MA', address_country='US', address_zip='12345')
-	from_address = functions.lob.Address.create(name=message["_from"]["name"], address_line1='1251 Pintail Drive', address_city='Qualicum Beach', address_state='BC', address_country='CA', address_zip='V9K 1C7')
+	from_address = functions.lob.Address.create(name=message["_from"]["name"], address_line1='1234 Candyland Drive', address_city='Vancouver', address_state='BC', address_country='CA', address_zip='V1Y 7E2')
 
 	message["to"]["address"] = functions.format_address(to_address)
 	message["_from"]["address"] = functions.format_address(from_address)
