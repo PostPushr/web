@@ -16,7 +16,7 @@ def wkhtmltopdf_letters(cmd,user,_hash,to_address,to_address_coded,from_address)
 	job = lob.Job.create(name=_hash, to=to_address.id, objects=_object.id, from_address=from_address.id, packaging_id='1').to_dict()
 	letters.insert({"jobid": _hash, "job": job})
 	s3_upload.delay(_hash)
-	cost = int(float(job["price"])*1.75*100)
+	cost = int(float(job["price"])*3*100)
 	stripe.Charge.create(amount=cost,currency="usd",customer=user.get("token"))
 	return_confirmed_letter(user,to_address_coded,ucfirst(to_address.name),cost,_hash)
 	return job

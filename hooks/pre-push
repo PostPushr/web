@@ -2,7 +2,7 @@
 
 ps -ef | grep "python" | grep "MHacks" | grep -v grep | awk '{print $2}' | xargs kill -s kill;
 
-(python postpushr.py > /dev/null 2>&1) & sleep 1;
+(foreman start > /dev/null 2>&1) & sleep 1;
 
 c=$(ps -ef | grep "python" | grep "MHacks" | grep -v grep | awk '{print $2}' | wc -l);
 
