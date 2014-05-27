@@ -167,14 +167,14 @@ ul li {
 						<p style="font-size: 50%; float: right; text-align:right;">{{ message._from.name }}<br />{{ message._from.address|safe }}</p>
 						<div style="clear: both;"></div>
 						<br />
-						<p>{{ message.to.prefix }} {{ message.to.name|safe }}</p>
+						<!-- <p>{{ message.to.prefix }} {{ message.to.name|safe }}</p> -->
 						<br />
 						<div style="margin-left:20px;">
 						<p>{{ message.body|safe }}</p>
 						</div>
 						<br />
-						<p>{{ message._from.prefix }}</p>
-						<p>{{ message._from.name }}</p>
+						<!-- <p>{{ message._from.prefix }}</p>
+						<p>{{ message._from.name }}</p> -->
 					</td>
 				</tr>
 			</table>
@@ -199,6 +199,9 @@ ul li {
 					<tr>
 						<td style="text-align:center;">
 							<p>sent from PostPushr.com</p>
+							{% if attachments %}
+							<p>{{ attachments }} attachments were stripped from this email</p>
+							{% endif %}
 						</td>
 					</tr>
 				</table>

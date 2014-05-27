@@ -79,10 +79,10 @@ def save_postcard(_hash, image, message, user, to_address, from_address):
 	template = env.get_template('postcard.html')
 	tasks.wkhtmltopdf_postcards.delay(_hash, image, message, user, to_address, from_address, template)
 
-def render_text(message):
+def render_text(message, attachments):
 	env = Environment(loader=FileSystemLoader('templates'))
 	template = env.get_template('pdf.html')
-	generated_html = template.render(message=message)
+	generated_html = template.render(message=message, attachments=attachments)
 	return generated_html
 
 
@@ -142,7 +142,7 @@ def gcode(address):
 			g.over_api = True
 		return None
 
-def send_letter(user,to_name,to_address,body):
+def send_letter(user,to_name,to_address,body,attachments):
 	to_address_coded = gcode(to_address)
 	if to_address_coded == None:
 		return_unknown_address(user,to_address)
@@ -153,6 +153,9 @@ def send_letter(user,to_name,to_address,body):
 		to_name = to_name.replace("_"," ").replace('"','')
 		to_name = re.sub("@\w+."+os.environ["domain"],"",to_name)
 		to_name = ucfirst(to_name)
+		if not to_name:
+			return_bad_params(user.get("mailing"))
+			return
 
 		message = {"to": {"prefix": "", "name": to_name}, "_from": {"prefix": "", "name": user.get("name")}, "body": body}
 
@@ -170,7 +173,7 @@ def send_letter(user,to_name,to_address,body):
 		message["to"]["address"] = str(to_address_coded).replace(",","<br>")
 		message["_from"]["address"] = str(from_address_coded).replace(",","<br>")
 
-		obj_loc = save_letter(render_text(message), user, to_address, to_address_coded, from_address)
+		obj_loc = save_letter(render_text(message, attachments), user, to_address, to_address_coded, from_address)
 		return obj_loc
 	else:
 		return_unknown_address(user,to_address)

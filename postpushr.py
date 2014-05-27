@@ -7,6 +7,7 @@ from User import User
 from bson.objectid import ObjectId
 from dateutil import parser
 import arrow, urllib
+from email_reply_parser import EmailReplyParser
 
 app = Flask(__name__)
 app.secret_key = os.environ['sk']
@@ -206,23 +207,31 @@ def logout():
 
 @app.route('/incoming/letter/email', methods=['POST', 'GET'])
 def incoming_letter_email():
-	body = unicode(request.form.get('text')).encode('ascii','xmlcharrefreplace').replace("\n","<br />")
+	body = EmailReplyParser.parse_reply(unicode(request.form.get('text')).encode('ascii','xmlcharrefreplace'))
+	body = '\n'.join(body.split('\n')).replace("\n","<br />")
 	regexp = re.findall(r'[\w\.-]+@[\w\.-]+',request.form.get('from'))
 
-	if len(regexp) > 0:
-		username = regexp[len(regexp)-1].lower()
+	try:
+		attachments = int(request.form.get('attachments'))
+	except Exception:
+		attachments = 0
+
+	if len(regexp) > 0 and len(regexp[-1]) > 0:
+		username = regexp[-1].lower()
 	else:
+		return_bad_params(username)
 		return Response(response=jfail("missing parameters"), status=200)
 
 	to_name = request.form.get('to')
 	to_address = unicode(request.form.get('subject')).encode('ascii','xmlcharrefreplace').lower().replace("fw:","").replace("re:","").strip()
 
 	if None in [body,username,to_name,to_address]:
+		return_bad_params(username)
 		return Response(response=jfail("missing parameters"), status=200)
 
 	user = User(username)
 	if user.is_valid():
-		send_letter(user,to_name,to_address,body)
+		send_letter(user,to_name,to_address,body,attachments)
 	else:
 		return_unknown_sender(username)
 		return Response(response=jfail("unknown sender"), status=200)

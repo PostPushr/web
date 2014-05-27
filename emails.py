@@ -10,6 +10,14 @@ def return_unknown_sender(email):
 	message.add_to(email)
 	s.web.send(message)
 
+def return_bad_params(email):
+	subject = "Invalid PostPushr Email"
+	text = "Hello,\n\nYou are receiving this email because you tried to send a physical document via PostPushr. PostPushr is a service that allows you to easily and affordably forward digital documents to physical locations.\n\nYour most recent email to us was missing a required parameter. For complete documentation, please visit http://www.{0}.\n\nPostPushr Error Bot".format(os.environ['domain'])
+	html = "Hello,<br /><br />You are receiving this email because you tried to send a physical document via PostPushr. PostPushr is a service that allows you to easily and affordably forward digital documents to physical locations.<br /><br />Your most recent email to us was missing a required parameter. For complete documentation, please visit <a href='http://www.{0}'>our site</a>.<br /><br />PostPushr Error Bot".format(os.environ['domain'])
+	message = sendgrid.Message(("errors@{0}".format(os.environ['domain']),"PostPushr Error Bot"), subject, text, html)
+	message.add_to(email)
+	s.web.send(message)
+
 def return_over_geocode_api(user):
 	subject = "PostPushr API Error"
 	text = "Hello {0},\n\nYou are receiving this email because you tried to send a physical document via PostPushr. Unfortunately, PostPushr has currently exceeded the daily limit of the API we use for address normalization.\n\nPlease try to to send your document again tomorrow, or visit http://www.{2} for more info.\n\nPostPushr Error Bot".format(user.get("name"),address,os.environ['domain'])
